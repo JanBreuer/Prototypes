@@ -33,7 +33,11 @@
       pricingNote:"* Alle Preise sind vollständig fiktive Mockup-Werte. Keine Kaufabwicklung, Zugangsverwaltung, Accounts oder Backend.",
       moreToolsTitle:"Noch mehr Ideen entdecken.",toolInfo:"Tool-Info ⓘ",
       countOne:"Prototyp",countMany:"Prototypen",empty:"Keine passenden Tools gefunden.",open:"Tool öffnen",
-      preview:"Produktvorschau",soon:"Coming Soon",live:"Live",nextPrefix:"Weiter mit"
+      preview:"Produktvorschau",soon:"Coming Soon",live:"Live",nextPrefix:"Weiter mit",
+      catalogAccessTitle:"Ein Tool oder die ganze Suite?",catalogAccessText:"Konfiguriere Laufzeit, Toolumfang und fiktive Lizenzpreise im interaktiven Access-Studio.",catalogAccessButton:"Access-Konzept entdecken",
+      homeAccessTitle:"Ein Tool testen oder die gesamte Suite?",homeAccessText:"Erlebe ein fiktives Lizenzmodell mit Toolauswahl, Laufzeiten und einem digitalen Access-Pass.",homeAccessButton:"Access-Modell ansehen",
+      teaserTitle:"Einzeltool, Suite oder Team-Pass?",teaserBody:"Erstelle ein fiktives Access-Modell für dieses Tool: Wähle Laufzeit und Umfang, sieh einen Beispielpreis und erkunde den digitalen Pass.",
+      teaserDisclaimer:"Reines Mockup. Keine echte Buchung oder Freischaltung.",teaserFrom:"BEISPIEL AB",teaserDepends:"Je nach Umfang und Dauer",teaserButton:"Access konfigurieren"
     },
     en: {
       skip:"Skip to content",navHome:"Home",navTools:"Tools",navJourney:"Toolchain",
@@ -64,7 +68,11 @@
       pricingNote:"* All prices are entirely fictitious mockup values. No checkout, access management, accounts or backend exist.",
       moreToolsTitle:"Discover more concepts.",toolInfo:"Tool info ⓘ",
       countOne:"prototype",countMany:"prototypes",empty:"No matching tools found.",open:"Open tool",
-      preview:"Concept preview",soon:"Coming Soon",live:"Live",nextPrefix:"Continue with"
+      preview:"Concept preview",soon:"Coming Soon",live:"Live",nextPrefix:"Continue with",
+      catalogAccessTitle:"One tool or the whole suite?",catalogAccessText:"Explore durations, scope and fictional licence prices in our interactive access studio.",catalogAccessButton:"Explore access concept",
+      homeAccessTitle:"Try one tool or the entire suite?",homeAccessText:"Explore a fictional licensing model with tool choice, durations and a digital access pass.",homeAccessButton:"View access concept",
+      teaserTitle:"Single tool, full suite or team pass?",teaserBody:"Configure a fictional access model for this tool: choose duration and scope, see an example price and explore a digital pass.",
+      teaserDisclaimer:"Mockup only. No real booking or activation.",teaserFrom:"EXAMPLE FROM",teaserDepends:"Depends on scope and duration",teaserButton:"Configure access"
     }
   };
 
@@ -85,7 +93,7 @@
   }
 
   function createCard(project, featured) {
-    const article = el("article", featured ? "project-card is-featured" : "project-card");
+    const article = el("article", (featured ? "project-card is-featured" : "project-card") + (project.status === "soon" ? " is-concept" : " is-live"));
     const body = el("div", "project-body");
     const meta = el("div", "project-meta");
     meta.appendChild(el("span", "category-label", project.category || "AI"));
@@ -164,6 +172,8 @@
     const steps = document.getElementById("concept-steps");
     steps.replaceChildren();
     ((project.steps && project.steps[lang]) || []).forEach((text) => steps.appendChild(el("li", "", text)));
+    const accessLink = document.getElementById("concept-access-link");
+    if (accessLink) accessLink.href = "../../access.html?tool=" + encodeURIComponent(project.id);
     const next = projects.find((p) => p.id === project.next);
     const link = document.getElementById("next-tool");
     if (next) { link.href = "../../" + next.href; link.textContent = tr("nextPrefix") + ": " + next.title + " ↗"; }

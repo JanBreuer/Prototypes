@@ -254,3 +254,37 @@ button{cursor:pointer}
   .hero h1{font-size:38px}
 }
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;transition:none!important}}
+
+/* Deliberate distinction: LIVE in Telekom magenta, concept cards in a softer magenta. */
+.projects-grid .project-card.is-concept{border-color:#e7e0e5;background:#fffcfd}
+.projects-grid .project-card.is-concept .card-visual{background:linear-gradient(145deg,#d2a3bb,#b98ba5);filter:saturate(.76)}
+.projects-grid .project-card.is-concept .card-visual::before{opacity:.58}
+.projects-grid .project-card.is-concept .visual-icon{background:#fffafb;color:#9a6380;box-shadow:0 12px 30px #6a224426}
+.projects-grid .project-card.is-concept .status-soon{background:#f7edf2;color:#795669;border-color:#e4d4dd}
+.projects-grid .project-card.is-concept:hover{border-color:#c4a6b6}
+.catalog-access-banner{background:#fff;display:flex;justify-content:space-between;align-items:center;gap:25px;border:1px solid #e5d1dd;border-left:5px solid var(--magenta);border-radius:16px;padding:24px 26px;margin:0 0 29px;box-shadow:0 10px 25px #35142706}
+.catalog-access-banner>div{min-width:0}
+.catalog-access-banner strong{display:block;font-size:21px;line-height:1.3;margin:7px 0}
+.catalog-access-banner p{font-size:13px;color:#6e6871;margin:0;max-width:620px}
+.catalog-access-kicker{font:850 10px/1.3 ui-monospace,Consolas,monospace;color:#b2005d;letter-spacing:.12em}
+.catalog-access-banner .button{white-space:nowrap;flex:none}
+.access-promo-section{background:#fff}
+.access-promo{border:1px solid #f2d6e5;background:linear-gradient(105deg,#fff5fa,#fff);padding:34px 39px;border-radius:18px;display:flex;justify-content:space-between;align-items:center;gap:22px}
+.access-promo h2{font-size:clamp(24px,3vw,35px);margin-bottom:10px}
+.access-promo p:last-child{font-size:14px;color:#6f6871;margin-bottom:0}
+.access-promo .button{white-space:nowrap;flex:none}
+.access-teaser{background:#fff;display:grid;grid-template-columns:minmax(0,1.4fr) minmax(220px,.62fr);gap:35px;align-items:center;border:1px solid #ecc3d7;border-radius:19px;overflow:hidden}
+.teaser-copy{padding:37px 0 37px 40px;min-width:0}
+.teaser-copy h2{font-size:clamp(27px,3.3vw,40px);margin:0 0 18px}
+.teaser-copy>p:not(.overline){color:#68636d;font-size:14px;max-width:650px;line-height:1.8}
+.teaser-options{display:flex;flex-wrap:wrap;gap:8px;margin:23px 0}
+.teaser-options span{border-radius:7px;background:#fff0f7;border:1px solid #f4d6e5;color:#a40057;font:800 10px/1.2 ui-monospace,monospace;padding:8px 12px}
+.teaser-copy .teaser-disclaimer{font-size:11px!important;margin-bottom:0}
+.teaser-purchase{align-self:stretch;display:flex;flex-direction:column;justify-content:center;align-items:flex-start;padding:34px;background:linear-gradient(145deg,#e20074,#b70060);color:#fff}
+.teaser-purchase>span{font:800 11px ui-monospace,monospace;letter-spacing:.1em;opacity:.84}
+.teaser-purchase strong{font-size:54px;letter-spacing:-.06em;line-height:1.2;margin:13px 0}
+.teaser-purchase small{font-size:11px;opacity:.84}
+.teaser-purchase .button{margin-top:29px;background:#fff;color:#ac0058;border-color:#fff;white-space:nowrap}
+.teaser-purchase .button:hover{background:#fff0f7}
+@media(max-width:820px){.catalog-access-banner,.access-promo{flex-direction:column;align-items:flex-start}.access-teaser{grid-template-columns:1fr;gap:0}.teaser-copy{padding:28px}.teaser-purchase{padding:30px}}
+@media(max-width:520px){.catalog-access-banner .button,.access-promo .button,.teaser-purchase .button{width:100%;white-space:normal}.catalog-access-banner{padding:19px}.access-promo{padding:24px}}

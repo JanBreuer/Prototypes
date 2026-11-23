@@ -12,7 +12,8 @@
   const tool = tools.find((p) => p.id === projectId);
   if (!tool) return;
 
-  const storageKey = "magenta-lab-intro-v1-" + projectId;
+  const storageKey = "magenta-lab-intro-v2-" + projectId;
+  const forceIntro = new URLSearchParams(window.location.search).get("intro") === "1";
   const getLanguage = () => {
     if (window.PROTOTYPE_LANG) return window.PROTOTYPE_LANG;
     try { return localStorage.getItem("magenta-lab-lang") === "en" ? "en" : "de"; }
@@ -108,12 +109,14 @@
       opener.addEventListener("click", show);
       document.body.appendChild(opener);
     }
+    window.MAGENTA_OPEN_TOOL_INTRO = show;
     window.addEventListener("prototype:language", (event) => {
       const next = event.detail && event.detail.lang;
       if (next && next !== lang) setLanguage(next);
     });
     setLanguage(lang);
-    if (!wasSeen()) show();
+    // A new intro revision is shown once, independently of previously dismissed versions.
+    if (forceIntro || !wasSeen()) show();
   }
 
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init, { once: true });
