@@ -100,7 +100,9 @@
     const status = el("span", project.status === "live" ? "status status-live" : "status status-soon", project.status === "live" ? tr("live") : tr("soon"));
     meta.appendChild(status);
     body.appendChild(meta);
-    body.appendChild(el(featured ? "h3" : "h3", "project-title", project.title));
+    const title = el("h3", "project-title", project.title);
+    if (project.id === "ai-or-nay") title.appendChild(el("span", "ai-roi-subtitle", " - Calculate the ROI of your AI use-case"));
+    body.appendChild(title);
     body.appendChild(el("p", "project-description", loc(project.description)));
     const tags = el("div", "project-tags");
     (project.tags || []).forEach((item) => tags.appendChild(el("span", "project-tag", item)));
