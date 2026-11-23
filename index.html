@@ -3,78 +3,54 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#101426">
-  <meta name="description" content="Jan Breuer: Webbasierte Tools und interaktive Prototypen für datenbasierte Entscheidungen.">
-  <title>Jan Breuer | Tools & Prototypes</title>
+  <meta name="theme-color" content="#e20074">
+  <meta name="description" content="Interaktive AI-Tools und Prototypen: Business Cases, Agentenarchitektur, Prompt Engineering und Roadmaps.">
+  <title>AI Tools & Prototypes | Magenta Lab</title>
   <link rel="stylesheet" href="assets/css/style.css">
-  <script src="data/projects.js" defer></script>
-  <script src="assets/js/main.js" defer></script>
+  <script defer src="data/projects.js"></script>
+  <script defer src="assets/js/main.js"></script>
 </head>
 <body data-page="home">
-  <a class="skip-link" href="#main">Zum Inhalt springen</a>
-  <header class="site-header">
-    <div class="header-inner container">
-      <a class="brand" href="index.html" aria-label="Zur Startseite">
-        <span class="brand-icon" aria-hidden="true">J<span>·</span>B</span>
-        <span>Jan Breuer <span class="brand-sub">/ Prototypes</span></span>
-      </a>
-      <nav class="site-nav" aria-label="Hauptnavigation">
-        <a href="index.html" data-nav="home">Startseite</a>
-        <a href="prototypes.html" data-nav="tools">Tools</a>
-        <a class="nav-cta" href="prototypes.html">Alle Prototypen <span aria-hidden="true">↗</span></a>
-      </nav>
-    </div>
-  </header>
-
+  <a class="skip-link" href="#main" data-t="skip">Zum Inhalt springen</a>
+  <header class="site-header"><div class="container header-inner">
+    <a class="brand" href="index.html"><span class="brand-mark" aria-hidden="true">M<span>·</span></span><span><strong>Magenta Lab</strong><small>AI TOOLS & PROTOTYPES</small></span></a>
+    <nav class="site-nav" aria-label="Hauptnavigation">
+      <a href="index.html" data-nav="home" data-t="navHome">Start</a>
+      <a href="prototypes.html" data-nav="tools" data-t="navTools">Tools</a>
+      <a href="#journey" class="nav-optional" data-t="navJourney">Toolchain</a>
+      <div class="language-switch" role="group" aria-label="Sprache / Language"><button type="button" data-language="de" aria-pressed="true">DE</button><button type="button" data-language="en" aria-pressed="false">EN</button></div>
+    </nav>
+  </div></header>
   <main id="main">
     <section class="hero container">
       <div class="hero-copy">
-        <div class="eyebrow"><span class="live-dot" aria-hidden="true"></span> Sammlung digitaler Prototypen</div>
-        <h1>Ideen testen.<br><span class="gradient-text">Entscheidungen verbessern.</span></h1>
-        <p class="hero-lede">Interaktive Webtools, die komplexe Fragen greifbar machen. Entwickelt zum Ausprobieren, Vergleichen und Weiterdenken.</p>
-        <div class="hero-actions">
-          <a class="button button-primary" href="prototypes.html">Tools entdecken <span aria-hidden="true">↗</span></a>
-          <a class="button button-quiet" href="#featured">Aktuellen Prototyp ansehen <span aria-hidden="true">↓</span></a>
-        </div>
-        <div class="hero-footnote"><span class="symbol-check" aria-hidden="true">✓</span> Direkt im Browser nutzbar</div>
+        <p class="eyebrow"><span class="eyebrow-dot" aria-hidden="true"></span><span data-t="heroTag">Ideas. Tools. Impact.</span></p>
+        <h1><span data-t="heroLine1">Weniger Buzzwords.</span><br><span class="accent" data-t="heroLine2">Mehr Wirkung.</span></h1>
+        <p class="hero-lede" data-t="heroText">Von der ersten KI-Idee bis zur belastbaren Roadmap. Interaktive Tools und Konzepte für bessere, nachvollziehbare Entscheidungen.</p>
+        <div class="hero-actions"><a class="button button-primary" href="prototypes.html"><span data-t="discover">Tools entdecken</span><span aria-hidden="true">↗</span></a><a class="button button-outline" href="#journey"><span data-t="journeyLink">Die Toolchain ansehen</span><span aria-hidden="true">↓</span></a></div>
+        <div class="hero-facts"><span><i class="dot dot-green" aria-hidden="true"></i><span data-t="oneLive">1 Live-Tool</span></span><span><i class="dot dot-magenta" aria-hidden="true"></i><span data-t="sevenConcepts">7 Konzepte in Planung</span></span></div>
       </div>
-      <div class="hero-visual" aria-hidden="true">
-        <div class="glow glow-one"></div><div class="glow glow-two"></div>
-        <div class="visual-grid"></div>
-        <div class="floating-panel floating-panel-top"><span class="mono-label">PROTOTYPE / 001</span><span class="panel-mark">◈</span></div>
-        <div class="visual-core"><div class="core-orbit"></div><div class="core-inner">A<span>?</span></div></div>
-        <div class="floating-panel floating-panel-bottom"><span class="indicator"></span><span>Explore · Evaluate · Iterate</span></div>
+      <div class="hero-visual" aria-label="Illustrative KI-Toolchain">
+        <div class="visual-top"><span>MAGENTA / AI STUDIO</span><span>EXPLORATION MODE</span></div>
+        <div class="pipeline"><div class="pipeline-row"><span class="node-label">01 / EVALUATE</span><strong>AI or Nay?</strong><b class="pipeline-status">LIVE</b></div><div class="pipeline-connector"></div><div class="pipeline-row"><span class="node-label">02 / DECIDE</span><strong>Agent or Not?</strong><b class="pipeline-status muted-status">SOON</b></div><div class="pipeline-connector"></div><div class="pipeline-row"><span class="node-label">03 / DESIGN</span><strong>Build · Route · Prompt</strong><b class="pipeline-status muted-status">SOON</b></div><div class="pipeline-connector"></div><div class="pipeline-row"><span class="node-label">04 / DELIVER</span><strong>Assess · Roadmap</strong><b class="pipeline-status muted-status">SOON</b></div></div>
+        <p class="visual-caption" data-t="heroVisualNote">Ein vernetzter Werkzeugkasten statt isolierter AI-Experimente.</p>
       </div>
     </section>
-
-    <section class="section section-featured" id="featured">
-      <div class="container">
-        <div class="section-heading">
-          <div><p class="overline">Im Fokus</p><h2>Aktueller Prototyp</h2></div>
-          <a class="text-link" href="prototypes.html">Alle Tools ansehen <span aria-hidden="true">↗</span></a>
-        </div>
-        <div id="featured-project" class="featured-target">
-          <p class="empty-message">Prototyp wird geladen …</p>
-        </div>
+    <section class="section surface-section" id="featured"><div class="container">
+      <div class="section-head"><div><p class="overline">FEATURED TOOL</p><h2 data-t="featuredTitle">Direkt ausprobieren.</h2><p class="section-sub" data-t="featuredSub">Ein echter Business Case statt Bauchgefühl.</p></div><a class="text-link" href="prototypes.html"><span data-t="allTools">Alle Tools</span><span aria-hidden="true">↗</span></a></div>
+      <div id="featured-project" class="featured-target"></div>
+    </div></section>
+    <section class="section" id="journey"><div class="container">
+      <div class="section-head"><div><p class="overline" data-t="connected">CONNECTED THINKING</p><h2 data-t="journeyTitle">Von der Frage zur Umsetzung.</h2><p class="section-sub" data-t="journeySub">Die geplanten Tools bauen fachlich aufeinander auf und teilen perspektivisch strukturierte Ergebnisse.</p></div></div>
+      <div class="journey-grid">
+        <a href="tools/ai-or-nay/" class="journey-step"><span>01 / EVALUATE</span><strong>AI or Nay?</strong><small data-t="journey1">Wirtschaftlichkeit prüfen</small><b>↗</b></a>
+        <a href="tools/coming-soon/?tool=agent-necessary" class="journey-step"><span>02 / DECIDE</span><strong>Agent or Not?</strong><small data-t="journey2">Architektur auswählen</small><b>↗</b></a>
+        <a href="tools/coming-soon/?tool=toolchain-composer" class="journey-step"><span>03 / DESIGN</span><strong>Build & Optimize</strong><small data-t="journey3">Routing, Harness und Prompt</small><b>↗</b></a>
+        <a href="tools/coming-soon/?tool=roadmap-builder" class="journey-step"><span>04 / DELIVER</span><strong>Roadmap</strong><small data-t="journey4">Reifegrad und Prioritäten</small><b>↗</b></a>
       </div>
-    </section>
-
-    <section class="section approach-section">
-      <div class="container">
-        <div class="approach-layout">
-          <div><p class="overline">Ansatz</p><h2>Weniger Theorie.<br>Mehr ausprobieren.</h2></div>
-          <p>Diese Sammlung bündelt eigenständige Experimente und Anwendungen. Neue Tools kommen hinzu, sobald sie bereit sind. Feedback und Weiterentwicklung gehören ausdrücklich dazu.</p>
-        </div>
-      </div>
-    </section>
+      <div class="concept-note"><span class="note-icon" aria-hidden="true">ⓘ</span><p data-t="conceptDisclaimer">Die Toolchain ist ein Produktkonzept. Nur AI or Nay ist derzeit funktional; alle weiteren Module sind Vorschauen.</p></div>
+    </div></section>
   </main>
-
-  <footer class="site-footer">
-    <div class="container footer-inner">
-      <span>© <span data-year>2026</span> Jan Breuer</span>
-      <span>Tools & Prototypes · Made for the web</span>
-      <a href="prototypes.html">Prototypen <span aria-hidden="true">↑</span></a>
-    </div>
-  </footer>
+  <footer class="site-footer"><div class="container footer-inner"><div><strong>MAGENTA LAB</strong><span>© <span data-year>2026</span> · AI Tools & Prototypes</span></div><p data-t="disclaimer">Unabhängige Prototypensammlung im Telekom-inspirierten Design. Keine offizielle Produkt- oder Buchungsseite.</p><a href="prototypes.html" data-t="footerTools">Tool-Übersicht ↗</a></div></footer>
 </body>
 </html>
