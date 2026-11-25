@@ -2,7 +2,7 @@
 
 <html lang="de">
 <head><meta charset="utf-8"/><meta content="width=device-width,initial-scale=1" name="viewport"/>
-<title>AI or Nay? | Guided Assessment · V3.3</title>
+<title>AI or Nay? | Guided Assessment · V3.4</title>
 <style>
 :root{--pink:#e6007e;--pinkdeep:#ae005c;--ink:#272236;--muted:#746c7c;--line:#e7e1e9;--bg:#faf8fb;--soft:#fff0f7;--green:#11684b;--amber:#8b571a;--red:#a52f51;--white:#fff}
 *{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;font:14px/1.5 system-ui,-apple-system,Segoe UI,Arial,sans-serif;background:var(--bg);color:var(--ink)}button,input,select,textarea{font:inherit}button{border:1px solid #d9d1dd;border-radius:8px;background:#fff;color:var(--ink);font-size:12px;font-weight:730;padding:9px 12px;cursor:pointer}button:hover{border-color:var(--pink)}button.primary{color:white;border-color:var(--pink);background:var(--pink)}button.slim{padding:6px 9px}button.danger{color:var(--red)}button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,summary:focus-visible{outline:2px solid #ee83b5;outline-offset:2px}button:disabled{opacity:.45;cursor:not-allowed}
@@ -539,6 +539,59 @@ body.guideResults .resultsPanel{margin-bottom:100px!important}
 .guideFileMenu{position:relative;flex:none}.guideFileMenu>summary{cursor:pointer;list-style:none;border:1px solid #e2d9e5;border-radius:11px;padding:10px 14px;font-size:12px;font-weight:750;color:#3d304d;background:white}.guideFileMenu>summary::-webkit-details-marker{display:none}.guideFileMenu[open]>summary{border-color:#e20074;background:#fff3f9}.guideFileChoices{position:absolute;z-index:999;right:0;top:calc(100% + 6px);background:#fff;border:1px solid #e6ddea;box-shadow:0 14px 30px #23102e22;border-radius:12px;padding:8px;display:grid;gap:5px;min-width:185px}.guideFileChoices button{border:0;background:#faf8fc;border-radius:8px;padding:9px 10px;color:#31293c;text-align:left;cursor:pointer;font-size:12px}.guideFileChoices button:hover{background:#fce8f3;color:#b60066}
 .guideQuickExports{display:none!important}.guideCostMix{border:1px solid #e8ddeb;border-radius:12px;padding:15px;margin-top:16px;background:#fdfbff}.guideCostMix h3{margin:0 0 10px;font-size:14px}.guideCostMixRow{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:7px 0;font-size:12px}.guideCostMixTrack{height:15px;display:flex;overflow:hidden;border-radius:20px;background:#ece7ee;margin-top:8px}.guideCostMixMaint{background:#8c78a1;height:100%}.guideCostMixUsage{background:#e20074;height:100%}.guideCostMix .guideHint{margin:10px 0 2px;font-size:11px;color:#786b7d}
 @media(max-width:720px){.guideFileChoices{left:0;right:auto}.guideMissingList{display:grid;grid-template-columns:1fr}.guideFileMenu>summary{padding:8px 9px}}
+</style>
+
+<style id="v34-mobile-guided-anchoring">
+/* Mobile: one continuous guided journey with a persistent step indicator and navigation. */
+.guideMobileDock{display:none}
+@media (max-width:700px){
+  #guideTop{display:flex;flex-direction:column;align-items:stretch;gap:7px;padding:9px 12px 7px;position:sticky;top:0;z-index:200}
+  #guideTop .guideBrand{width:100%;min-height:34px}
+  #guideTop .guideActions{display:flex;width:100%;justify-content:flex-start;flex-wrap:nowrap;overflow-x:auto;overflow-y:visible;gap:6px;scrollbar-width:none;-webkit-overflow-scrolling:touch;min-height:40px;padding:0 0 2px}
+  #guideTop .guideActions::-webkit-scrollbar{display:none}
+  #guideTop .guideActions > *{flex:0 0 auto;white-space:nowrap}
+  #guideTop .guideActions button,#guideTop .guideFileMenu>summary{min-height:34px;white-space:nowrap;padding:7px 10px}
+  #guideTop .guideFileMenu .guideFileChoices{position:fixed;top:92px;right:12px;z-index:400}
+  body.guideWizard .guideMobileDock{display:grid;grid-template-columns:minmax(0,1fr) auto;column-gap:12px;align-items:center;width:100%;padding:1px 0 0}
+  .guideMobileStage{font-size:11px;font-weight:800;color:#6e516d;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .guideMobilePct{font-size:12px;color:#c0006c;font-weight:850}
+  .guideMobileTrack{grid-column:1 / -1;height:4px;background:#f1e8f0;border-radius:8px;overflow:hidden;margin-top:5px}
+  .guideMobileFill{height:100%;width:0%;background:linear-gradient(90deg,#e20074,#f267b1);transition:width .2s}
+  body.guideWizard #guidedRoot{margin:17px auto 0!important;padding:0 12px 125px!important;scroll-padding-top:155px;min-height:0}
+  body.guideWizard .guideIntro{margin-bottom:14px}
+  body.guideWizard .guideTitle{font-size:24px;line-height:1.2;margin:5px 0 8px}
+  body.guideWizard .guideSubtitle{font-size:13px;line-height:1.45}
+  body.guideWizard .guideProgressPanel{padding:11px 14px;margin-bottom:12px;border-radius:13px}
+  body.guideWizard .guideProgressMeta{font-size:11px}
+  body.guideWizard .guideProgressMeta strong{font-size:15px}
+  body.guideWizard .guideProgressInputs{max-height:55px;overflow:auto;align-content:flex-start}
+  body.guideWizard .guideCard{padding:19px 17px 24px;border-radius:17px}
+  body.guideWizard .guideQuestion{font-size:22px;line-height:1.23;margin:11px 0 9px}
+  body.guideWizard .guideDesc{font-size:12px;margin-bottom:14px}
+  body.guideWizard .guideBasicUnit{margin:14px 0 4px;padding-left:11px}
+  body.guideWizard .guideSubquestion{padding:11px;margin-top:11px}
+  body.guideWizard .guideDependentField{margin-top:14px}
+  body.guideWizard #guideQuestionBody input,body.guideWizard #guideQuestionBody select{font-size:16px;min-height:44px}
+  body.guideWizard .guideTile{min-height:77px;padding:11px 12px}
+  body.guideWizard .guideTile strong{font-size:16px}
+  body.guideWizard .guideTile small{font-size:10px}
+  /* Nested tasks have less width than the page: avoid clipping long option labels. */
+  body.guideWizard .guideWizardTask .guideTiles.cols2,
+  body.guideWizard .guideAiDetail .guideTiles.cols2{grid-template-columns:minmax(0,1fr)!important}
+  body.guideWizard .guideWizardRole .guideTiles.cols3{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+  body.guideWizard .guideWizardTask .guideTile,
+  body.guideWizard .guideWizardRole .guideTile{min-width:0;white-space:normal;overflow-wrap:anywhere;min-height:58px}
+  body.guideWizard .guideTaskHead strong{min-width:0;overflow-wrap:anywhere}
+  body.guideWizard .guideFoot{padding:0;min-height:24px;margin-top:13px}
+  body.guideWizard .guideFoot>.guideHint{display:none}
+  body.guideWizard .guideFoot .guideNavigation{position:fixed;left:0;right:0;bottom:0;bottom:env(safe-area-inset-bottom,0px);z-index:190;display:grid;grid-template-columns:1fr 1.4fr;gap:10px;width:auto!important;padding:12px max(13px,env(safe-area-inset-left,0px)) 14px max(13px,env(safe-area-inset-right,0px));background:#fffffff5;border-top:1px solid #eadfea;box-shadow:0 -8px 30px #37213a1a;backdrop-filter:blur(16px)}
+  body.guideWizard .guideFoot .guideNavigation button{height:48px;min-width:0;font-size:14px;touch-action:manipulation}
+  #guidedRoot .guideBasicUnit,#guidedRoot .guideDependentField,#guidedRoot .guideRoleComp,#guidedRoot .guideRoleTasks,#guidedRoot .guideTaskDetails,#guidedRoot .guideAiDetail,#guidedRoot .guideCostBranch{scroll-margin-top:155px;scroll-margin-bottom:115px}
+  body.guideResults #inputView{padding-bottom:95px!important}
+  body.guideResults .shell{padding-bottom:130px!important}
+}
+@media(max-width:360px){body.guideWizard .guideCard{padding:15px 13px}#guideTop{padding-left:9px;padding-right:9px}}
+@media(prefers-reduced-motion:reduce){.guideMobileFill{transition:none!important}}
 </style>
 </head><body>
 <main class="shell"><header class="header"><div><div class="eyebrow">AI BUSINESS CASE &amp; DECISION TOOL</div><h1 class="brandTitle">AI or Nay<span class="brandQuestion">?</span></h1><div class="brandSubtitle">AI Use-Case &amp; ROI Simulator</div><p class="muted">Prozesse nach Mitarbeitendenrollen strukturieren und den wirtschaftlichen KI-Nutzen gegenüber dem heutigen Prozess berechnen.</p><span class="tag">V1.6 · Single-page · Offline · Pricing as of 06 Nov 2026</span></div><div class="headActions noPrint"><div class="actionRow"><div aria-label="Sprache / Language" class="languagePicker" role="group"><button aria-pressed="true" class="langBtn active" id="langDE" type="button">Deutsch</button><button aria-pressed="false" class="langBtn" id="langEN" type="button">English</button></div><button class="primary" id="demoBtn" type="button"><span aria-hidden="true">▶</span> Beispiel laden</button></div><div class="actionRow"><button id="clearBtn" type="button"><span aria-hidden="true">↺</span> Eingaben leeren</button><button id="importBtn" type="button"><span aria-hidden="true">↥</span> JSON importieren</button><button id="exportBtn" type="button"><span aria-hidden="true">↧</span> JSON exportieren</button><button id="printBtn" type="button"><span aria-hidden="true">⎙</span> Drucken</button><details class="exportMenu" id="exportMenu"><summary>Ergebnisse exportieren</summary><div class="exportDropdown"><button id="exportCsv" type="button">CSV</button><button id="exportXlsx" type="button">Excel (.xlsx)</button><button id="exportPdf" type="button">PDF</button></div></details><input accept="application/json" hidden="" id="importFile" type="file"/></div></div></header>
@@ -2287,12 +2340,44 @@ function showRequiredFeedback(scroll=false){
  g('gNext')?.classList.toggle('needsInput',!valid);
  if(scroll&&items.length){const target=g('guidedRoot')?.querySelector(items[0].selector);if(target){target.scrollIntoView({block:'center',behavior:'smooth'});target.classList.add('guideAttention');setTimeout(()=>target.classList.remove('guideAttention'),1500);}}
 }
+function mobileGuided(){return window.matchMedia('(max-width:700px)').matches&&document.body.classList.contains('guideWizard');}
+function updateMobileGuideDock(){
+ const dock=g('guideMobileDock');if(!dock)return;
+ const phases={basics:1,case:1,volume:1,horizon:1,role:2,compensation:2,stepName:2,stepBefore:2,stepMode:2,aiShare:2,aiFuture:2,aiBilling:2,aiModel:2,ruleFuture:2,loop:2,realization:3,platform:4,sharedCount:4,sharedSetup:4,sharedOpex:4,complexity:4,integrations:4,dataReady:4,flatFee:4,optionalPrompt:5,optionalDetails:5,review:5};
+ const names=[tr('Grunddaten','Basics'),tr('Rollen & Tasks','Roles & tasks'),tr('Zeitgewinn','Value of saved time'),tr('Kosten','Costs'),tr('Optionale Details','Optional details')];
+ const phase=phases[draft.stage]||1,progress=requiredCount().percent;
+ g('guideMobileStage').textContent=tr('Schritt','Step')+' '+phase+'/5 · '+names[phase-1];
+ g('guideMobilePct').textContent=progress+' %';g('guideMobileFill').style.width=progress+'%';
+}
+function anchorMobileNext(target){
+ if(!mobileGuided()||!target||target.hidden||target.closest('[hidden]'))return;
+ requestAnimationFrame(()=>{
+  if(!target.isConnected)return;
+  const head=g('guideTop')?.getBoundingClientRect().height||0;
+  const rect=target.getBoundingClientRect(),clearance=head+12;
+  const y=Math.max(0,window.scrollY+rect.top-clearance);
+  window.scrollTo({top:y,behavior:window.matchMedia('(prefers-reduced-motion:reduce)').matches?'instant':'smooth'});
+ });
+}
+function anchorMobileAfterChange(el){
+ if(!mobileGuided()||!el)return;
+ let target=null;
+ if(el.dataset.gfield==='case'&&draft.case.trim())target=g('guideBasicVolume');
+ if(el.dataset.gfield==='volume'&&draft.volume>0)target=g('guideBasicHorizon');
+ if(el.dataset.gfield==='currentTech'&&draft.currentTech!==null)target=g('guideCostFinancing');
+ if(el.dataset.gfield==='sharedCount'&&draft.sharedCount>=2)target=g('guidedRoot')?.querySelector('[data-guide-shared-setup]');
+ if(el.dataset.gfield==='sharedSetup'&&draft.sharedSetup!==null)target=g('guidedRoot')?.querySelector('[data-guide-shared-opex]');
+ if(el.dataset.gkey==='name'&&el.dataset.grole!==undefined){const i=el.dataset.grole;if(draft.roles[+i]?.name.trim())target=g('guidedRoot')?.querySelector(`[data-guide-role-shell="${i}"] .guideRoleComp`);}
+ if(el.dataset.gkey==='rate'&&el.dataset.grole!==undefined){const i=el.dataset.grole;if(draft.roles[+i]?.rate!==null)target=g('guidedRoot')?.querySelector(`[data-guide-role-shell="${i}"] .guideRoleTasks`);}
+ if(el.dataset.gkey==='name'&&el.dataset.gtask!==undefined){const key=el.dataset.gtask;const [ri,si]=key.split(':').map(Number);if(draft.roles[ri]?.steps[si]?.name.trim())target=g('guidedRoot')?.querySelector(`[data-guide-task-shell="${key}"] .guideTaskDetails`);}
+ anchorMobileNext(target);
+}
 function showGuide(){document.body.classList.remove('guideResults');document.body.classList.add('guideWizard');g('guidedRoot').hidden=false;renderGuide();window.scrollTo({top:0,behavior:'instant'});}
 function renderGuide(){if(!document.body.classList.contains('guideWizard'))return;
  const s=draft.stage,m=meta[s],rc=requiredCount(),optional=['optionalPrompt','optionalDetails','optionalTools','optionalExtra'].includes(s);
  const category=tr(m[0],{basics:'Getting started',case:'Use case',volume:'Volume',horizon:'Time horizon',role:'Role',compensation:'Labor costs',stepName:'Task',stepBefore:'Current effort',stepMode:'Future approach',aiShare:'AI coverage',aiFuture:'Human oversight',aiBilling:'AI costs',aiModel:'AI model',ruleFuture:'Rules-based effort',loop:'Process structure',realization:'Economic value',platform:'Cost structure',sharedCount:'Shared platform',sharedSetup:'Shared setup',sharedOpex:'Shared operations',complexity:'Implementation',integrations:'Integration',dataReady:'Data readiness',flatFee:'Contract',optionalPrompt:'Optional details',optionalDetails:'Optional details',optionalTools:'Optional details',optionalExtra:'Optional details',review:'Review'}[s]||m[0]);
  g('guidedRoot').innerHTML=`<div class="guideIntro"><div class="guideKicker">${tr('Geführte Erfassung','Guided assessment')}</div><h1 class="guideTitle">${tr('Dein KI-Business-Case Schritt für Schritt','Build your AI business case')}</h1><p class="guideSubtitle">${tr('Wir beginnen mit den wichtigsten Informationen. Unbekannte optionale Details können übersprungen werden.','Start with the essential facts. Skip any optional details you do not know.')}</p></div><div class="guideProgressPanel"><div class="guideProgressMeta"><span id="guideProgressCount">${tr('Pflichtangaben abgeschlossen','Required inputs completed')}: ${rc.done} / ${rc.total}</span><strong id="guidePct">${pct(rc.percent)}</strong></div><div class="guideProgressTrack"><div id="guideProgressFill" class="guideProgressFill" style="width:${rc.percent}%"></div></div><div class="guideProgressInputs" id="guideProgressInputs">${progressChips()}</div></div><div class="guideCard"><div class="guideStepLabel">${clean(category)} <span class="${optional?'guideOptional':'guideRequired'}">${optional?tr('Optional','Optional'):tr('Pflichtangabe','Required')}</span></div><h2 class="guideQuestion">${tr(m[1],m[2])}</h2><p class="guideDesc">${tr(m[3],m[4])}</p><div id="guideQuestionBody">${content()}</div>${advancedContent(s)}<div id="guideRequiredFeedback" class="guideRequiredFeedback" aria-live="polite"></div><div class="guideFoot"><span class="guideHint">${s==='optionalDetails'||s==='optionalPrompt'?tr('Optionale Angaben verändern nicht die Pflichtfeldquote.','Optional inputs do not affect required-input progress.'):s==='role'?tr('Rollen und Tasks direkt hier ergänzen.','Add roles and tasks here.'):s==='basics'?tr('Drei Grundangaben auf einer Seite.','Three essentials on one page.'):''}</span><div class="guideNavigation"><button id="gBack" class="guideBack" type="button" ${!draft.history.length?'disabled':''}>← ${tr('Zurück','Back')}</button><button id="gNext" class="guideNext" type="button">${s==='optionalDetails'||(s==='optionalPrompt'&&draft.optionalChoice==='no')?tr('Ergebnisse ansehen','View results'):tr('Weiter','Continue')} →</button></div></div></div>`;
- g('gBack').addEventListener('click',prev);g('gNext').addEventListener('click',advance);
+ g('gBack').addEventListener('click',prev);g('gNext').addEventListener('click',advance);updateMobileGuideDock();
  const auto=g('guideQuestionBody').querySelector('[autofocus]');if(auto)auto.focus({preventScroll:true});updateRoleReveal();showRequiredFeedback();
 }
 function updateCostReveal(){if(draft.stage!=='platform')return;const root=g('guidedRoot');if(!root)return;
@@ -2305,7 +2390,7 @@ function updateCostReveal(){if(draft.stage!=='platform')return;const root=g('gui
  set('[data-guide-single-fee]',!!draft.dataReady);
  const math=root.querySelector('.guideCostMath');if(math)math.innerHTML=costGuidePreview();
 }
-function updateProgress(){const rc=requiredCount();updateBasicReveal();updateRoleReveal();updateCostReveal();if(g('guideProgressInputs'))g('guideProgressInputs').innerHTML=progressChips();if(g('guideProgressCount'))g('guideProgressCount').textContent=tr('Pflichtangaben abgeschlossen','Required inputs completed')+': '+rc.done+' / '+rc.total;if(g('guidePct'))g('guidePct').textContent=pct(rc.percent);if(g('guideProgressFill'))g('guideProgressFill').style.width=rc.percent+'%';showRequiredFeedback();}
+function updateProgress(){const rc=requiredCount();updateBasicReveal();updateRoleReveal();updateCostReveal();if(g('guideProgressInputs'))g('guideProgressInputs').innerHTML=progressChips();if(g('guideProgressCount'))g('guideProgressCount').textContent=tr('Pflichtangaben abgeschlossen','Required inputs completed')+': '+rc.done+' / '+rc.total;if(g('guidePct'))g('guidePct').textContent=pct(rc.percent);if(g('guideProgressFill'))g('guideProgressFill').style.width=rc.percent+'%';showRequiredFeedback();updateMobileGuideDock();}
 function nextStage(){switch(draft.stage){
  case 'basics':return 'role';case 'case':return 'volume';case 'volume':return 'horizon';case 'horizon':return 'role';case 'role':return 'realization';case 'compensation':return 'stepName';case 'stepName':return 'stepBefore';case 'stepBefore':return 'stepMode';
  case 'stepMode':return isAI(step())?'aiShare':step().mode==='rules'?'ruleFuture':'loop';
@@ -2468,6 +2553,7 @@ function quickStructure(action,b){
 }
 function init(){
  const top=document.createElement('div');top.id='guideTop';top.innerHTML=`<div class="guideBrand"><span class="guideLogo">↗</span><div><div class="guideBrandName">AI or Nay?</div><div class="guideBrandSub">AI Use-Case & ROI Simulator</div></div></div><div class="guideActions"><div class="guideLang"><button id="guideDE" type="button">DE</button><button id="guideEN" type="button">EN</button></div><button id="guideDemo" type="button">◉ ${tr('Demo','Demo')}</button><details class="guideFileMenu" id="guideLoadMenu"><summary id="guideImport">↥ ${tr('Daten laden','Load data')}</summary><div class="guideFileChoices"><button type="button" data-file-action="load-json">JSON</button><button type="button" data-file-action="load-excel">Excel (.xlsx)</button></div></details><details class="guideFileMenu" id="guideSaveMenu"><summary id="guideSave">↧ ${tr('Daten speichern','Save data')}</summary><div class="guideFileChoices"><button type="button" data-file-action="save-json">JSON</button><button type="button" data-file-action="save-excel">Excel (.xlsx)</button><button type="button" data-file-action="report-pdf">${tr('Management-Report (PDF)','Management report (PDF)')}</button></div></details><button id="guideNew" class="guideAccent" type="button">＋ ${tr('Neuer Case','New case')}</button></div>`;
+ top.insertAdjacentHTML('beforeend','<div id="guideMobileDock" class="guideMobileDock" role="status"><span id="guideMobileStage" class="guideMobileStage"></span><span id="guideMobilePct" class="guideMobilePct">0%</span><div class="guideMobileTrack"><div id="guideMobileFill" class="guideMobileFill"></div></div></div>');
  document.body.prepend(top);
  const root=document.createElement('section');root.id='guidedRoot';document.querySelector('.shell').insertBefore(root,g('inputView'));
  const quick=document.createElement('section');quick.id='guideQuick';const details=document.createElement('details');details.id='guideFullDetails';details.innerHTML=`<summary id="guideFullSummary">${tr('Alle Parameter','All parameters')}</summary><div id="guideFullBody"></div>`;
@@ -2512,7 +2598,7 @@ function init(){
   }catch(err){alert(tr('Import fehlgeschlagen: ','Import failed: ')+err.message);}draftImport.value='';
  });
  window.saveGuidedJson=saveGuidedJson;window.aiGuidedSnapshot=()=>JSON.parse(JSON.stringify({...draft,history:[]}));
- function scrollNewTask(key,kind=''){requestAnimationFrame(()=>{const el=[...g('guidedRoot').querySelectorAll('[data-guide-task-shell]')].find(x=>x.dataset.guideTaskShell===key);if(!el)return;const target=kind==='mode'&&el.querySelector('.guideAiDetail:not([hidden])')?el.querySelector('.guideAiDetail:not([hidden])'):kind==='billing'&&el.querySelector('[data-guide-newfield]')?el.querySelector('[data-guide-newfield]'):el;target.scrollIntoView({block:'center',behavior:'smooth'});});}
+ function scrollNewTask(key,kind=''){requestAnimationFrame(()=>{const el=[...g('guidedRoot').querySelectorAll('[data-guide-task-shell]')].find(x=>x.dataset.guideTaskShell===key);if(!el)return;const target=kind==='mode'&&el.querySelector('.guideAiDetail:not([hidden])')?el.querySelector('.guideAiDetail:not([hidden])'):kind==='billing'&&el.querySelector('[data-guide-newfield]')?el.querySelector('[data-guide-newfield]'):el;if(mobileGuided())anchorMobileNext(target);else target.scrollIntoView({block:'center',behavior:'smooth'});});}
  function mutateRoleTask(el,raw){const rk=el.dataset.grole,tk=el.dataset.gtask,key=el.dataset.gkey;if(rk!==undefined){const r=draft.roles[+rk];if(!r)return;const old=r.salaryType;if(key==='rate')r.rate=num(raw);else r[key]=raw;if(key==='salaryType'&&old!==raw)r.rate=null;}
   else if(tk!==undefined){const [ri,si]=tk.split(':').map(Number),t=draft.roles[ri]?.steps[si];if(!t)return;const numeric=['before','share','future','rules','savedPct','errorRate','rework','aiError','aiRework','depRate','depMinutes','inputTokens','outputTokens','calls'];t[key]=numeric.includes(key)?num(raw):raw;
    if((key==='before'||key==='savedPct')&&t.savedPct!==null)t.future=t.before===null?null:+(t.before*(100-t.savedPct)/100).toFixed(3);
@@ -2522,17 +2608,17 @@ function init(){
  }
  root.addEventListener('click',e=>{const b=e.target.closest('[data-guide-missing]');if(!b)return;const item=missingRequired()[+b.dataset.guideMissing];if(!item)return;const target=g('guidedRoot')?.querySelector(item.selector);if(target){target.scrollIntoView({behavior:'smooth',block:'center'});target.classList.add('guideAttention');setTimeout(()=>target.classList.remove('guideAttention'),1600);if(target.matches('input,select,textarea'))target.focus({preventScroll:true});}});
  root.addEventListener('input',e=>{const t=e.target;if(!t.dataset.gkey)return;mutateRoleTask(t,t.value);if(t.dataset.gkey==='savedPct'||t.dataset.gkey==='before'){const el=g('guidedRoot').querySelector(`[data-guide-split-output="${t.dataset.gtask}"]`);if(el){const [ri,si]=t.dataset.gtask.split(':').map(Number);const st=draft.roles[ri]?.steps[si];if(st)el.textContent=splitText(st.before,st.savedPct);}}updateProgress();});
- root.addEventListener('change',e=>{const t=e.target;if(!t.dataset.gkey)return;mutateRoleTask(t,t.value);if(t.dataset.gkey==='model')updateProgress();});
+ root.addEventListener('change',e=>{const t=e.target;if(!t.dataset.gkey)return;mutateRoleTask(t,t.value);if(t.dataset.gkey==='model')updateProgress();anchorMobileAfterChange(t);});
  root.addEventListener('click',e=>{const b=e.target.closest('[data-guide-horizon-mode]');if(!b)return;draft.horizonMode=b.dataset.guideHorizonMode;draft.horizon=null;renderGuide();const h=g('guideBasicHorizon');h?.scrollIntoView({block:'nearest',behavior:'smooth'});});
  root.addEventListener('click',e=>{const b=e.target.closest('[data-taskmode]');if(!b)return;const [ri,si]=b.dataset.gtask.split(':').map(Number),t=draft.roles[ri].steps[si];t.beforeMode=b.dataset.taskmode;t.before=null;t.savedPct=null;t.future=null;renderGuide();scrollNewTask(`${ri}:${si}`);});
- root.addEventListener('click',e=>{const b=e.target.closest('[data-rolechoice]');if(!b)return;const ri=+b.dataset.grole,r=draft.roles[ri];if(b.dataset.rolechoice==='salaryType'&&r.salaryType!==b.dataset.gvalue){r.salaryType=b.dataset.gvalue;r.rate=null;}renderGuide();requestAnimationFrame(()=>g('guidedRoot').querySelector(`[data-grole="${ri}"][data-gkey="rate"]`)?.focus({preventScroll:true}));});
+ root.addEventListener('click',e=>{const b=e.target.closest('[data-rolechoice]');if(!b)return;const ri=+b.dataset.grole,r=draft.roles[ri];if(b.dataset.rolechoice==='salaryType'&&r.salaryType!==b.dataset.gvalue){r.salaryType=b.dataset.gvalue;r.rate=null;}renderGuide();requestAnimationFrame(()=>{const target=g('guidedRoot').querySelector(`[data-grole="${ri}"][data-gkey="rate"]`);target?.focus({preventScroll:true});anchorMobileNext(target?.closest('.guideDependentField')||target);});});
  root.addEventListener('click',e=>{const b=e.target.closest('[data-taskchoice]');if(!b)return;const [ri,si]=b.dataset.gtask.split(':').map(Number),t=draft.roles[ri].steps[si];let k=b.dataset.taskchoice,v=b.dataset.gvalue;
   if(k==='before'){t.before=+v;if(t.savedPct!==null)t.future=+(t.before*(100-t.savedPct)/100).toFixed(3);}
   else if(k==='mode'){t.mode=v;if(!isAI(t)){t.share=null;t.future=null;t.savedPct=null;t.billing='';t.model='';}else if(t.share===null)t.share=100;if(v!=='rules')t.rules=null;}
   else if(k==='share')t.share=+v;
   else if(k==='savedPct'){t.savedPct=+v;t.future=t.before===null?null:+(t.before*(100-t.savedPct)/100).toFixed(3);}
   else if(k==='billing'){t.billing=v;t.model=v==='contract'?'contract':'';}
-  renderGuide();if(k==='mode'||k==='billing')scrollNewTask(`${ri}:${si}`,k);
+  renderGuide();if(k==='mode'||k==='billing')scrollNewTask(`${ri}:${si}`,k);else if(k==='before'){anchorMobileNext(g('guidedRoot')?.querySelector(`[data-guide-task-shell="${ri}:${si}"] .guideTaskDetails .guideDependentField:last-child`));}
  });
  root.addEventListener('click',e=>{const b=e.target.closest('[data-guide-action]');if(!b)return;const a=b.dataset.guideAction;let target='';
   if(a==='addRole'){draft.roles.push(blankGuideRole());target=`role:${draft.roles.length-1}`;}
@@ -2543,8 +2629,8 @@ function init(){
  });
 
  root.addEventListener('input',e=>{const t=e.target;if(!t.dataset.gfield)return;setVal(t.dataset.gfield,t.value);updateProgress();});
- root.addEventListener('change',e=>{const t=e.target;if(!t.dataset.gfield)return;setVal(t.dataset.gfield,t.value);if(t.dataset.gfield==='model')updateProgress();});
- root.addEventListener('click',e=>{const btn=e.target.closest('[data-gchoice]');if(!btn)return;setVal(btn.dataset.gchoice,btn.dataset.gvalue);renderGuide();});
+ root.addEventListener('change',e=>{const t=e.target;if(!t.dataset.gfield)return;setVal(t.dataset.gfield,t.value);if(t.dataset.gfield==='model')updateProgress();anchorMobileAfterChange(t);});
+ root.addEventListener('click',e=>{const btn=e.target.closest('[data-gchoice]');if(!btn)return;const field=btn.dataset.gchoice;setVal(field,btn.dataset.gvalue);renderGuide();if(field==='platform')anchorMobileNext(g('guidedRoot')?.querySelector('.guideCostBranch'));else if(field==='complexity')anchorMobileNext(g('guidedRoot')?.querySelector('[data-guide-single-integr]'));else if(field==='integrations')anchorMobileNext(g('guidedRoot')?.querySelector('[data-guide-single-data]'));else if(field==='flatIncluded')anchorMobileNext(g('guidedRoot')?.querySelector('[data-guide-contract] .guideDependentField:last-child'));});
  quick.addEventListener('input',e=>{if(!e.target.dataset.qfield)return;const key=e.target.dataset.qfield;tweak(key,e.target.value);
  if(key.endsWith(':aiSavedPct')||key.endsWith(':before')){const id=Number(key.split(':')[1]),st=steps.find(t=>t.id===id);if(st){const el=quick.querySelector('[data-quick-split="'+id+'"]');if(el){const saved=st.before>0&&st.future!==null?Math.max(0,Math.min(100,100* (1-st.future/st.before))):null;el.textContent=splitText(st.before,saved);}}}
  });
