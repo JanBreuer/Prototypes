@@ -10,7 +10,7 @@ permissions:
 jobs:
   browser-tests:
     name: AI or Nay browser and ROI tests
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 15
     defaults:
       run:
