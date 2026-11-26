@@ -62,3 +62,97 @@ jobs:
           name: ai-or-nay-visual-review
           path: visual-review/
           retention-days: 14
+
+  publish-review:
+    name: AI or Nay review in PR
+    needs: [visual-review, browser-tests]
+    if: >-
+      ${{ always() && needs.visual-review.result == 'success' &&
+      github.event_name == 'pull_request' &&
+      github.event.pull_request.head.repo.full_name == github.repository &&
+      (startsWith(github.head_ref, 'feature/ai-or-nay-') ||
+      startsWith(github.head_ref, 'fix/ai-or-nay-') ||
+      (github.head_ref == 'develop' && github.base_ref == 'main')) }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    permissions:
+      contents: write
+      pull-requests: write
+      actions: read
+    concurrency:
+      group: ai-or-nay-review-pr-${{ github.event.pull_request.number }}
+      cancel-in-progress: true
+    steps:
+      # No source checkout, no PR code execution and no external credentials in this job.
+      - uses: actions/download-artifact@v4
+        with:
+          name: ai-or-nay-visual-review
+          path: review-images
+      - uses: actions/github-script@v7
+        env:
+          QA_RESULT: ${{ needs.browser-tests.result }}
+        with:
+          script: |
+            const fs = require('node:fs/promises');
+            const {owner,repo} = context.repo;
+            const pr = context.payload.pull_request;
+            const args = {owner,repo,pull_number:pr.number};
+            const current = async()=> (await github.rest.pulls.get(args)).data;
+            const valid = p=>p.state==='open' && p.head.sha===pr.head.sha && p.base.sha===pr.base.sha;
+            if(!valid(await current())) return core.notice('Stale PR run, skipping.');
+            const screens = ['desktop-wizard','desktop-results','mobile-wizard','mobile-results'];
+            const tree=[];
+            for(const screen of screens) for(const version of ['before','after','diff']){
+              const name=screen+'-'+version+'.png';
+              const png=await fs.readFile('review-images/'+name);
+              const desktop=screen.startsWith('desktop');
+              if(png.length<24 || png.length>5*1024*1024 || png.subarray(0,8).toString('hex')!=='89504e470d0a1a0a' ||
+                 png.readUInt32BE(16)!==(desktop?1440:390) || png.readUInt32BE(20)!==(desktop?900:844))
+                throw Error('Invalid review screenshot: '+name);
+              const blob=await github.rest.git.createBlob({owner,repo,content:png.toString('base64'),encoding:'base64'});
+              tree.push({path:name,mode:'100644',type:'blob',sha:blob.data.sha});
+            }
+            // One isolated public image-only branch per PR. No changes to main, develop or feature branch.
+            const branch='review-images/pr-'+pr.number;
+            let parent;
+            try{parent=(await github.rest.git.getRef({owner,repo,ref:'heads/'+branch})).data.object.sha;}
+            catch(e){if(e.status!==404)throw e;}
+            const t=await github.rest.git.createTree({owner,repo,tree});
+            const commit=await github.rest.git.createCommit({owner,repo,message:'Visual review PR #'+pr.number+' '+pr.head.sha.slice(0,7),tree:t.data.sha,parents:parent?[parent]:[pr.base.sha]});
+            if(!valid(await current()))return core.notice('Stale PR run, skipping publication.');
+            if(parent)await github.rest.git.updateRef({owner,repo,ref:'heads/'+branch,sha:commit.data.sha,force:false});
+            else await github.rest.git.createRef({owner,repo,ref:'refs/heads/'+branch,sha:commit.data.sha});
+            const raw='https://raw.githubusercontent.com/'+owner+'/'+repo+'/'+commit.data.sha+'/';
+            const route='/tools/ai-or-nay/';
+            const before=pr.base.ref==='main'?'https://janbreuer.github.io/Prototypes'+route:'https://ai-or-nay-review.pages.dev'+route;
+            let preview=null;
+            const comments=await github.paginate(github.rest.issues.listComments,{owner,repo,issue_number:pr.number,per_page:100});
+            for(const comment of comments.reverse()){
+              if(!['cloudflare-workers-and-pages[bot]','cloudflare-workers-and-pages'].includes(comment.user?.login)||comment.user?.type!=='Bot')continue;
+              const body=comment.body||'';
+              if(!body.includes('<code>'+pr.head.sha.slice(0,7)+'</code>')||!body.includes('Deploy successful'))continue;
+              const match=body.match(/https:\/\/[0-9a-f]{8}\.ai-or-nay-review\.pages\.dev/);
+              if(match){preview=match[0]+route;break;}
+            }
+            if(!preview&&pr.head.ref==='develop')preview='https://ai-or-nay-review.pages.dev'+route;
+            const run='https://github.com/'+owner+'/'+repo+'/actions/runs/'+context.runId;
+            const artifact=(await github.rest.actions.listWorkflowRunArtifacts({owner,repo,run_id:context.runId,name:'ai-or-nay-visual-review'})).data.artifacts.find(a=>!a.expired);
+            const report=artifact?run+'/artifacts/'+artifact.id:run;
+            const head=await current();
+            if(!valid(head))return core.notice('Stale PR run, skipping PR update.');
+            const begin='<!-- ai-or-nay-review:start -->',end='<!-- ai-or-nay-review:end -->';
+            const title=head.title.startsWith('DO NOT MERGE')?'⛔ Review-Übung – nicht mergen':'Review – hier starten';
+            const next=preview?'**[Nachher – Vorschlag interaktiv testen]('+preview+')**':'Cloudflare-Vorschau noch nicht bestätigt – siehe Deployment-Kommentar';
+            const lines=[begin,'## '+title,'','| Vorher | Nachher |','| --- | --- |','| **[Aktuelle Version öffnen]('+before+')** | '+next+' |','','**QA:** '+(process.env.QA_RESULT==='success'?'✅ bestanden':'⚠️ '+process.env.QA_RESULT)+' · [Checks ansehen]('+run+') · [Kompletten Bildbericht (ZIP)]('+report+')','','Screenshots: Zielbranch `'+pr.base.sha.slice(0,7)+'` vs. geplanter Merge von `'+pr.head.sha.slice(0,7)+'`. Die interaktiven Branch-Links können sich nach weiteren Änderungen aktualisieren.',''];
+            const labels={'desktop-wizard':'Desktop – Eingabe','desktop-results':'Desktop – Ergebnis','mobile-wizard':'Mobile – Eingabe','mobile-results':'Mobile – Ergebnis'};
+            lines.push('| Ansicht | Vorher | Nachher |','| --- | --- | --- |');
+            for(const s of screens){
+              const img=v=>'<a href="'+raw+s+'-'+v+'.png"><img src="'+raw+s+'-'+v+'.png" width="360" alt="'+labels[s]+' '+v+'"></a>';
+              lines.push('| '+labels[s]+' · [Differenz]('+raw+s+'-diff.png) | '+img('before')+' | '+img('after')+' |');
+            }
+            lines.push('','Technische Checks ersetzen keine fachliche oder visuelle Freigabe. Bilder zeigen synthetische Demo-Daten.','',end);
+            const block=lines.join('\n');
+            const body=head.body||'';
+            const a=body.indexOf(begin),b=body.indexOf(end);
+            const newBody=a>=0&&b>a?body.slice(0,a)+block+body.slice(b+end.length):block+'\n\n'+body;
+            await github.rest.pulls.update({...args,body:newBody});
