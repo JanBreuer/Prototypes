@@ -8,3 +8,6 @@ Scope: this directory. Shared portfolio assets require explicit approval before 
 - Keep changes small; avoid unrelated refactors and changes to original-v3.3.html.
 - Test desktop/mobile, both languages, empty/zero inputs, monthly/annual conversions, negative ROI, shared costs and import/export as applicable. Add regression tests for changed calculations. Clearly disclose unrun tests.
 - Human review is required before merging. Release only through a develop-to-main PR approved by the product owner.
+
+## Product owner review
+Use the AI or Nay PR template. Summarize changes in at most five nontechnical bullets, include interactive test steps with synthetic inputs and expected results, exact preview commit/link if available, before/after screenshots for UI changes, and actual test results. Only the product owner merges; own PRs may be merged by the owner via authorized bypass rather than self-approval. Do not expose private projects or modify Cloudflare account-level settings.
