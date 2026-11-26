@@ -33,3 +33,32 @@ jobs:
             tools/ai-or-nay/qa/playwright-report/
             tools/ai-or-nay/qa/test-results/
           retention-days: 14
+
+  visual-review:
+    name: AI or Nay visual review
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.base.sha }}
+          path: .visual-base
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm install --no-package-lock --no-audit --no-fund
+        working-directory: tools/ai-or-nay/qa
+      - run: npx playwright install --with-deps chromium
+        working-directory: tools/ai-or-nay/qa
+      - run: node tools/ai-or-nay/qa/visual-review.cjs .visual-base . visual-review
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: ai-or-nay-visual-review
+          path: visual-review/
+          retention-days: 14
