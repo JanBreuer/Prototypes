@@ -50,10 +50,21 @@ test('demo reaches complete financial results without uncaught errors',async({pa
   await demo(page); expect(await page.evaluate(()=>Number.isFinite(window.latest.results.currentNet))).toBe(true);
   expect(errors).toEqual([]);
 });
-test('changing comparison mode does not change underlying today net',async({page})=>{
-  await demo(page); const old=await page.evaluate(()=>window.latest.results.currentNet);
+test('rules scenario switches visible comparison and preserves the AI baseline',async({page})=>{
+  await demo(page);
+  await page.locator('#guideEN').click();
+  const old=await page.evaluate(()=>window.latest.results.currentNet);
+  await expect(page.locator('#guideLeanResults .guideTopKpiTitle').first()).toContainText('AI ROI vs. today');
   await page.locator('#compareRules').click();
-  await expect.poll(()=>page.evaluate(()=>window.latest.comparisonMode)).toBe('rules');
+  await expect(page.locator('#compareRules')).toHaveAttribute('aria-pressed','true');
+  await expect(page.locator('#guideLeanResults .guideTopKpiTitle').first()).toContainText('Rules ROI vs. today');
+  await expect(page.locator('#guideLeanResults .guideLeanCol.future').first()).toContainText('With rules');
+  // Rules vs. today is a separate presentation scenario; the engine retains the AI baseline.
+  expect(await page.evaluate(()=>window.latest.comparisonMode)).toBe('today');
+  expect(await page.evaluate(()=>window.latest.results.currentNet)).toBeCloseTo(old,6);
+  await page.locator('#compareToday').click();
+  await expect(page.locator('#compareToday')).toHaveAttribute('aria-pressed','true');
+  await expect(page.locator('#guideLeanResults .guideTopKpiTitle').first()).toContainText('AI ROI vs. today');
   expect(await page.evaluate(()=>window.latest.results.currentNet)).toBeCloseTo(old,6);
 });
 test('JSON save and reimport preserves completed case net',async({page})=>{
