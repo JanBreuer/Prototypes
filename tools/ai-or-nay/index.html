@@ -593,6 +593,17 @@ body.guideResults .resultsPanel{margin-bottom:100px!important}
 @media(max-width:360px){body.guideWizard .guideCard{padding:15px 13px}#guideTop{padding-left:9px;padding-right:9px}}
 @media(prefers-reduced-motion:reduce){.guideMobileFill{transition:none!important}}
 </style>
+<!-- INTENTIONAL REJECTION DEMO: never merge this visual experiment. -->
+<style id="reject-demo-neon">
+body.guideWizard,body.guideResults{background:#eaff00!important;color:#290044!important}
+#guideTop{background:#ff5800!important;border-bottom:8px dotted #6500ff!important}
+#guideTop .guideBrandName,#guideTop .guideBrandSub{color:#2c005b!important;font-family:"Comic Sans MS",cursive!important}
+.guideTitle,.guideQuestion{font-family:"Comic Sans MS",cursive!important;color:#5a00dc!important;text-shadow:2px 2px #ff8be6!important}
+.guideCard,.guideProgressPanel,.guideIntro,.guideLeanBox,.guideTopKpi{background:#ffbcff!important;border:4px dashed #5500ff!important;box-shadow:6px 6px 0 #ff8500!important}
+#guideTop button,#gNext,#gBack,.comparisonSwitch button{background:#00ffb7!important;color:#420072!important;border:2px dotted #7800ff!important;border-radius:20px!important}
+.guideTopKpiNumber{color:#5d00d7!important}
+.guideProgressTrack{background:#ff8500!important}
+</style>
 </head><body>
 <main class="shell"><header class="header"><div><div class="eyebrow">AI BUSINESS CASE &amp; DECISION TOOL</div><h1 class="brandTitle">AI or Nay<span class="brandQuestion">?</span></h1><div class="brandSubtitle">AI Use-Case &amp; ROI Simulator</div><p class="muted">Prozesse nach Mitarbeitendenrollen strukturieren und den wirtschaftlichen KI-Nutzen gegenüber dem heutigen Prozess berechnen.</p><span class="tag">V1.6 · Single-page · Offline · Pricing as of 06 Nov 2026</span></div><div class="headActions noPrint"><div class="actionRow"><div aria-label="Sprache / Language" class="languagePicker" role="group"><button aria-pressed="true" class="langBtn active" id="langDE" type="button">Deutsch</button><button aria-pressed="false" class="langBtn" id="langEN" type="button">English</button></div><button class="primary" id="demoBtn" type="button"><span aria-hidden="true">▶</span> Beispiel laden</button></div><div class="actionRow"><button id="clearBtn" type="button"><span aria-hidden="true">↺</span> Eingaben leeren</button><button id="importBtn" type="button"><span aria-hidden="true">↥</span> JSON importieren</button><button id="exportBtn" type="button"><span aria-hidden="true">↧</span> JSON exportieren</button><button id="printBtn" type="button"><span aria-hidden="true">⎙</span> Drucken</button><details class="exportMenu" id="exportMenu"><summary>Ergebnisse exportieren</summary><div class="exportDropdown"><button id="exportCsv" type="button">CSV</button><button id="exportXlsx" type="button">Excel (.xlsx)</button><button id="exportPdf" type="button">PDF</button></div></details><input accept="application/json" hidden="" id="importFile" type="file"/></div></div></header>
 <div class="layout" id="inputView"><div class="left">
