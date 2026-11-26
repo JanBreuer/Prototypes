@@ -1,3 +1,10 @@
+<!-- ai-or-nay-review:start -->
+## Review – hier starten
+
+Der automatische visuelle Review ergänzt hier direkte Tool-Links, Vorher-/Nachher-Bilder und den Testbericht nach dem CI-Lauf.
+
+<!-- ai-or-nay-review:end -->
+
 ## Kurzfassung / summary (max. 5 bullets, nontechnical)
 ## Fachlicher Nutzen / benefit
 ## Betroffene Bereiche / affected screens and calculations
