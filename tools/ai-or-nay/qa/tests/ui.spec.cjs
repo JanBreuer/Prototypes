@@ -10,6 +10,7 @@ async function demo(page) {
   await open(page);
   await page.locator('#guideDemo').click();
   await page.locator('#demoCasePicker [data-demo-case="it"]').click();
+  await page.locator('[data-demo-confirm]').click();
   await expect(page.locator('body')).toHaveClass(/guideResults/);
   await expect.poll(()=>page.evaluate(()=>window.latest?.results?.errors?.length)).toBe(0);
 }
@@ -109,6 +110,9 @@ for(const locale of ['DE','EN']){
    await expect(page.locator('#demoCasePicker [data-demo-case]')).toHaveCount(12);
    await expect(page.locator('#demoPickerTitle')).toContainText(locale==='EN'?'Choose a demo use case':'Demo-Use-Case auswählen');
    await page.locator('#demoCasePicker [data-demo-case="'+id+'"]').click();
+   await expect(page.locator('#demoCasePicker')).toHaveAttribute('data-stage','preview');
+   await expect(page.locator('[data-demo-confirm]')).toContainText(locale==='EN'?'Calculate AI potential':'KI-Potenzial berechnen');
+   await page.locator('[data-demo-confirm]').click();
    await expect(page.locator('body')).toHaveClass(/guideResults/);
    const r=await page.evaluate(()=>window.latest.results);
    expect(r.errors, id).toEqual([]);expect(r.currentNet,id).toBeCloseTo(net,2);
@@ -132,5 +136,43 @@ test('demo picker cancels without replacement and supports editing on mobile',as
  expect(await page.evaluate(()=>window.latest.results.currentNet)).toBeGreaterThan(old);
  await page.locator('#guideDemo').click();
  await page.locator('#demoCasePicker [data-demo-case="it"]').click();
+  await page.locator('[data-demo-confirm]').click();
  expect(await page.evaluate(()=>window.latest.results.vol)).toBe(1200);
+});
+
+test('demo preview shows baseline, does not overwrite until confirmation, and supports back',async({page})=>{
+ await open(page);await page.locator('#guideDE').click();
+ const before=await page.evaluate(()=>JSON.stringify(window.latest.inputs));
+ await page.locator('#guideDemo').click();await page.locator('[data-demo-case="it"]').click();
+ await expect(page.locator('#demoCasePicker')).toHaveAttribute('data-stage','preview');
+ await expect(page.locator('[data-demo-metric="cost"]')).toContainText('12.600,00');
+ await expect(page.locator('[data-demo-metric="volume"]')).toHaveText('1.200');
+ await expect(page.locator('[data-demo-metric="hours"]')).toHaveText('300');
+ await expect(page.locator('[data-demo-metric="minutes"]')).toHaveText('15 min');
+ await expect(page.locator('.demoPreviewStep')).toHaveCount(2);
+ expect(await page.evaluate(()=>JSON.stringify(window.latest.inputs))).toBe(before);
+ await expect(page.locator('body')).not.toHaveClass(/guideResults/);
+ await page.locator('[data-demo-back]').click();await expect(page.locator('[data-demo-case]')).toHaveCount(12);
+ await page.locator('[data-demo-case="it"]').click();await page.keyboard.press('Escape');
+ await expect(page.locator('#demoCasePicker')).not.toBeVisible();
+ expect(await page.evaluate(()=>JSON.stringify(window.latest.inputs))).toBe(before);
+ await page.locator('#guideDemo').click();await page.locator('[data-demo-case="it"]').click();
+ await page.locator('[data-demo-confirm]').click();
+ await expect(page.locator('body')).toHaveClass(/guideResults/);
+ const result=await page.evaluate(()=>window.latest.results);
+ expect(result.monthHumanBefore+result.monthTechBefore).toBeCloseTo(12600,2);
+ expect(result.currentNet).toBeCloseTo(44182.4,2);
+ // Cancel a different preview while viewing results.
+ await page.locator('#guideDemo').click();await page.locator('[data-demo-case="hr"]').click();
+ await page.locator('[data-demo-close]').click();
+ expect(await page.evaluate(()=>window.latest.results.currentNet)).toBeCloseTo(44182.4,2);
+});
+test('demo baseline preview fits mobile and localizes',async({page})=>{
+ await page.setViewportSize({width:390,height:844});await open(page);await page.locator('#guideEN').click();
+ await page.locator('#guideDemo').click();await page.locator('[data-demo-case="it"]').click();
+ await expect(page.locator('#demoPickerTitle')).toHaveText('IT ticket handling');
+ await expect(page.locator('[data-demo-metric="cost"]')).toContainText('12,600.00');
+ expect(await page.locator('#demoCasePicker').evaluate(el=>el.scrollWidth<=el.clientWidth+1)).toBe(true);
+ await expect(page.locator('[data-demo-confirm]')).toBeInViewport();
+ await page.locator('[data-demo-confirm]').click();await expect(page.locator('body')).toHaveClass(/guideResults/);
 });
