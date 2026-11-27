@@ -98,7 +98,7 @@ test('desktop and mobile demo screenshots for human review',async({page},info)=>
 });
 
 const demoFixtures=[
- ['it',44182.4,'positive'],['meeting',56195.2,'positive'],['customer',76800,'positive'],['software',93445,'positive'],
+ ['it',21603.2,'positive'],['meeting',6868,'positive'],['customer',55200,'positive'],['software',30970,'positive'],
  ['invoice',-1440,'borderline'],['ba',4011.25,'borderline'],['knowledge',-4528,'borderline'],['report',-5040,'borderline'],
  ['bid',-7081.5,'negative'],['contract',-23920,'negative'],['hr',-19224,'negative'],['quality',-36232,'negative']
 ];
@@ -125,6 +125,10 @@ for(const locale of ['DE','EN']){
    await expect(page.locator('body')).toHaveClass(/guideResults/);
    const r=await page.evaluate(()=>window.latest.results);
    expect(r.errors, id).toEqual([]);expect(r.currentNet,id).toBeCloseTo(net,2);
+   // All catalog comparisons are calibrated, but no cap is applied to user-created cases.
+   expect(r.currentROI).toBeLessThan(100);
+   expect(100*r.rulesNet/r.rulesTotal).toBeLessThan(100);
+   expect(r.rulesCompareROI).toBeLessThan(100);
    if(band==='positive')expect(r.currentROI).toBeGreaterThan(30);
    else if(band==='negative')expect(r.currentROI).toBeLessThan(-15);
    else expect(Math.abs(r.currentROI)).toBeLessThanOrEqual(15);
@@ -170,11 +174,11 @@ test('demo preview shows baseline, does not overwrite until confirmation, and su
  await expect(page.locator('body')).toHaveClass(/guideResults/);
  const result=await page.evaluate(()=>window.latest.results);
  expect(result.monthHumanBefore+result.monthTechBefore).toBeCloseTo(12600,2);
- expect(result.currentNet).toBeCloseTo(44182.4,2);
+ expect(result.currentNet).toBeCloseTo(21603.2,2);
  // Cancel a different preview while viewing results.
  await page.locator('#guideDemo').click();await page.locator('[data-demo-case="hr"]').click();
  await page.locator('[data-demo-close]').click();
- expect(await page.evaluate(()=>window.latest.results.currentNet)).toBeCloseTo(44182.4,2);
+ expect(await page.evaluate(()=>window.latest.results.currentNet)).toBeCloseTo(21603.2,2);
 });
 test('demo baseline preview fits mobile and localizes',async({page})=>{
  await page.setViewportSize({width:390,height:844});await open(page);await page.locator('#guideEN').click();
