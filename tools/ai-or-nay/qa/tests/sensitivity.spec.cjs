@@ -50,6 +50,9 @@ test('DE/EN modal story, scenario selection, direct navigation, live updates and
  const before=await page.evaluate(()=>JSON.stringify(serialize()));
  await open.click();await expect(dialog).toBeVisible();
  await expect(dialog.locator('.ssTabs button')).toHaveCount(5);
+ const names=await dialog.locator('.ssTabName').allTextContents();
+ expect(names).toHaveLength(5);expect(names.every(n=>n.trim()&&!/^(Hebel|Driver)$/.test(n))).toBe(true);
+ await expect(dialog.locator('.ssTabs [aria-current="step"]')).toHaveAttribute('title',await dialog.locator('.ssTitle').textContent());
  await expect(dialog.locator('.ssScenario')).toHaveCount(4);
  await expect(dialog.locator('.ssKPI')).toHaveCount(3);
  await expect(dialog.locator('.ssTitle')).toBeVisible();
@@ -61,6 +64,8 @@ test('DE/EN modal story, scenario selection, direct navigation, live updates and
  await page.screenshot({path:info.outputPath('desktop-sensitivity.png')});
  await page.setViewportSize({width:390,height:844});
  expect(await dialog.evaluate(el=>el.scrollWidth<=el.clientWidth+1)).toBe(true);
+ const geometry=await dialog.evaluate(el=>{const boxes=sel=>[...el.querySelectorAll(sel)].map(e=>e.getBoundingClientRect());const tabs=boxes('.ssTabs button'),plots=boxes('.ssPlot');return {tabHeight:Math.max(...tabs.map(r=>r.height))-Math.min(...tabs.map(r=>r.height)),plotTop:Math.max(...plots.map(r=>r.top))-Math.min(...plots.map(r=>r.top)),allTabsVisible:tabs.every(r=>r.left>=el.getBoundingClientRect().left&&r.right<=el.getBoundingClientRect().right)};});
+ expect(geometry.tabHeight).toBeLessThanOrEqual(1);expect(geometry.plotTop).toBeLessThanOrEqual(1);expect(geometry.allTabsVisible).toBe(true);
  await page.screenshot({path:info.outputPath('mobile-sensitivity.png')});
  await page.keyboard.press('Escape');await expect(dialog).toBeHidden();
  await page.locator('#guideEN').click();await expect(open).toContainText('Sensitivity analysis');await open.click();
