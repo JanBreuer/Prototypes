@@ -94,6 +94,7 @@ jobs:
         env:
           QA_RESULT: ${{ needs.browser-tests.result }}
         with:
+          retries: 3
           script: |
             const fs = require('node:fs/promises');
             const {owner,repo} = context.repo;
