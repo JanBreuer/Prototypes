@@ -102,7 +102,7 @@ jobs:
             const current = async()=> (await github.rest.pulls.get(args)).data;
             const valid = p=>p.state==='open' && p.head.sha===pr.head.sha && p.base.sha===pr.base.sha;
             if(!valid(await current())) return core.notice('Stale PR run, skipping.');
-            const screens = ['desktop-wizard','desktop-results','mobile-wizard','mobile-results'];
+            const screens = ['desktop-wizard','desktop-results','mobile-wizard','mobile-results','desktop-demo-preview','mobile-demo-preview'];
             const tree=[];
             for(const screen of screens) for(const version of ['before','after','diff']){
               const name=screen+'-'+version+'.png';
@@ -146,7 +146,7 @@ jobs:
             const title=head.title.startsWith('DO NOT MERGE')?'⛔ Review-Übung – nicht mergen':'Review – hier starten';
             const next=preview?'**[Nachher – Vorschlag interaktiv testen]('+preview+')**':'Cloudflare-Vorschau noch nicht bestätigt – siehe Deployment-Kommentar';
             const lines=[begin,'## '+title,'','| Vorher | Nachher |','| --- | --- |','| **[Aktuelle Version öffnen]('+before+')** | '+next+' |','','**QA:** '+(process.env.QA_RESULT==='success'?'✅ bestanden':'⚠️ '+process.env.QA_RESULT)+' · [Checks ansehen]('+run+') · [Kompletten Bildbericht (ZIP)]('+report+')','','Screenshots: Zielbranch `'+pr.base.sha.slice(0,7)+'` vs. geplanter Merge von `'+pr.head.sha.slice(0,7)+'`. Die interaktiven Branch-Links können sich nach weiteren Änderungen aktualisieren. **Neuer Tab:** Links mit Strg + Klick (Windows/Linux), Cmd + Klick (Mac) oder mittlerer Maustaste öffnen; so bleibt der PR geöffnet.',''];
-            const labels={'desktop-wizard':'Desktop – Eingabe','desktop-results':'Desktop – Ergebnis','mobile-wizard':'Mobile – Eingabe','mobile-results':'Mobile – Ergebnis'};
+            const labels={'desktop-wizard':'Desktop – Eingabe','desktop-results':'Desktop – Ergebnis','mobile-wizard':'Mobile – Eingabe','mobile-results':'Mobile – Ergebnis','desktop-demo-preview':'Desktop – nach Demo-Auswahl','mobile-demo-preview':'Mobile – nach Demo-Auswahl'};
             lines.push('| Ansicht | Vorher | Nachher |','| --- | --- | --- |');
             for(const s of screens){
               const img=v=>'<a href="'+raw+s+'-'+v+'.png"><img src="'+raw+s+'-'+v+'.png" width="360" alt="'+labels[s]+' '+v+'"></a>';
