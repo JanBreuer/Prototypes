@@ -141,12 +141,13 @@
  window.roiSensitivityAnalyze=analyze;
  window.roiSensitivityScore=score;
  const style=document.createElement('style');
- style.textContent='#roiSensitivity{border:1px solid #e8dce9;border-radius:12px;background:white;margin:16px 0;padding:14px;color:#54485b}#roiSensitivity>summary{cursor:pointer;font-weight:800;color:#61234c;font-size:14px}#roiSensitivity p{font-size:12px;line-height:1.45;margin:9px 0}#roiSensitivity label{display:block;font-size:12px;font-weight:700;margin:10px 0 5px}#roiSensitivity select{width:100%;padding:8px;border:1px solid #e8dce9;border-radius:8px;background:white;color:#54485b}#roiSensitivity .sensitivityRow{border-top:1px solid #eee5ee;padding:11px 0}#roiSensitivity .sensitivityHead{display:flex;gap:8px;align-items:center;justify-content:space-between}#roiSensitivity .sensitivityHead button{border:0;background:transparent;color:#b00065;font-weight:750;text-align:left;cursor:pointer;padding:4px 0;overflow-wrap:anywhere}#roiSensitivity .sensitivityHead small{white-space:nowrap;color:#756879}#roiSensitivity .sensitivityValues{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;margin-top:8px}#roiSensitivity .sensitivityValue{background:#faf6fa;padding:8px;border-radius:7px;font-size:11px;overflow-wrap:anywhere}#roiSensitivity .sensitivityValue b{display:block;margin-bottom:4px;color:#54485b}#roiSensitivity .sensitivityValue span{display:block;line-height:1.5}#roiSensitivity .sensitivityMore{margin-top:8px;background:white;border:1px solid #e8dce9;padding:8px;border-radius:8px;color:#9c0059;cursor:pointer}@media print{#roiSensitivity{display:none!important}}';
+ style.textContent="#roiSensitivity{border:1px solid #e8dce9;border-radius:14px;background:#fff;margin:16px 0;padding:14px;color:#54485b}\n#roiSensitivity>summary{cursor:pointer;font-weight:800;color:#61234c;font-size:14px}\n#roiSensitivity p{font-size:12px;line-height:1.45;margin:8px 0}\n#roiSensitivity .sensitivityIntro{color:#6b5e70}\n#roiSensitivity label{display:block;font-size:12px;font-weight:700;margin:12px 0 5px}\n#roiSensitivity select{width:100%;padding:9px;border:1px solid #e8dce9;border-radius:8px;background:#fff;color:#54485b}\n#roiSensitivity .sensitivityInsight{background:#fdf2f8;border-left:3px solid #e20074;border-radius:8px;padding:10px 12px;margin:12px 0}\n#roiSensitivity .sensitivityInsight small{display:block;color:#78516b;font-size:10px;font-weight:750;text-transform:uppercase;letter-spacing:.05em}\n#roiSensitivity .sensitivityInsight strong{display:block;font-size:14px;line-height:1.4;margin-top:3px;overflow-wrap:anywhere}\n#roiSensitivity .sensitivityLegend{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:4px;font-size:10px;color:#756879;margin-top:14px}\n#roiSensitivity .sensitivityLegend span:last-child{text-align:right}\n#roiSensitivity .sensitivityRow{border-top:1px solid #eee5ee;padding:10px 0}\n#roiSensitivity .sensitivityHead{display:flex;gap:8px;align-items:baseline;justify-content:space-between}\n#roiSensitivity .sensitivityHead button{border:0;background:transparent;color:#9c0059;font-size:12px;font-weight:750;text-align:left;cursor:pointer;padding:2px 0;overflow-wrap:anywhere;min-width:0}\n#roiSensitivity .sensitivityHead small{flex-shrink:0;color:#756879;font-size:11px;white-space:nowrap}\n#roiSensitivity .sensitivityTrack{height:12px;background:#f5eff4;border-radius:4px;position:relative;margin:8px 0 4px;overflow:hidden}\n#roiSensitivity .sensitivityTrack::after{content:\"\";position:absolute;left:50%;width:1px;height:100%;background:#817482;z-index:2}\n#roiSensitivity .sensitivityBar{position:absolute;height:100%;top:0;border-radius:3px}\n#roiSensitivity .sensitivityBad{background:#b64b63;color:#a3324c}\n#roiSensitivity .sensitivityGood{background:#24816d;color:#146c59}\n#roiSensitivity .sensitivityEnds{display:flex;justify-content:space-between;align-items:flex-start;gap:5px;font-size:11px;font-variant-numeric:tabular-nums}\n#roiSensitivity .sensitivityEnds>span{min-width:0;overflow-wrap:anywhere}\n#roiSensitivity .sensitivityEnds>span:last-child{text-align:right}\n#roiSensitivity .sensitivityEnds b{display:block;font-size:12px}\n#roiSensitivity .sensitivityEnds small{display:block;color:#756879;font-size:10px}\n#roiSensitivity .sensitivityToggle{border:0;background:transparent;color:#9c0059;font-weight:650;font-size:11px;padding:5px 0;cursor:pointer;text-align:left}\n#roiSensitivity .sensitivityValues{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;margin-top:4px}\n#roiSensitivity .sensitivityValue{background:#faf6fa;padding:8px;border-radius:7px;font-size:11px;overflow-wrap:anywhere}\n#roiSensitivity .sensitivityValue b{display:block;margin-bottom:4px;color:#54485b}\n#roiSensitivity .sensitivityValue span{display:block;line-height:1.5}\n#roiSensitivity .sensitivityMore{width:100%;margin-top:4px;background:white;border:1px solid #e8dce9;padding:8px;border-radius:8px;color:#9c0059;cursor:pointer;font-size:12px;font-weight:650}\n#roiSensitivity .sensitivityFoot{color:#756879;font-size:10px}\n#roiSensitivity .sensitivityTransition{font-size:11px;padding:6px 8px;background:#fff5ea;border-radius:5px;margin:6px 0;color:#80541b}\n#roiSensitivity button:focus-visible,#roiSensitivity select:focus-visible{outline:2px solid #e20074;outline-offset:2px}\n@media print{#roiSensitivity{display:none!important}}";
  document.head.append(style);
  const panel=document.createElement('details');panel.id='roiSensitivity';panel.className='noPrint';panel.innerHTML='<summary></summary><div class="sensitivityContent"></div>';
  const lean=$id('guideLeanResults');if(!lean)return;lean.insertAdjacentElement('afterend',panel);
  const content=panel.querySelector('.sensitivityContent');
  let sort='roi',all=false,queued=false;
+ const expanded=new Set();
  function goto(c){
   const nodes=[...document.querySelectorAll(c.selector)];
   const quick=nodes.find(el=>el.closest('#guideQuick')&&!el.disabled);
@@ -158,27 +159,62 @@
   return true;
  }
  const node=(tag,text,cls)=>{const n=document.createElement(tag);if(text!==undefined)n.textContent=text;if(cls)n.className=cls;return n;};
+ // Numeric effects are oriented so that improvement is always to the right.
+ const effect=(scenario,key)=>finite(scenario[key])?(key==='payback'?-scenario[key]:scenario[key]):null;
+ const formatEffect=(scenario,key)=>key==='net'?money(scenario.net):signed(scenario[key])+' '+(key==='roi'?tr('PP','pp'):tr('Mon.','mo'));
+ const changeLabel=s=>signed(s.actualPercent,1)+' %';
  function render(){
   panel.querySelector('summary').textContent=tr('Sensitivitätsanalyse · wirtschaftliche Hebel','Sensitivity analysis · economic drivers');
   if(!panel.open||!document.body.classList.contains('guideResults'))return;
   const view=window.roiSensitivityView?.()==='rules'?'rules':'ai';
   const data=analyze(serialize(),view);
   content.replaceChildren();
-  content.append(node('p',tr('Isolierte Szenarien gegenüber heute: jeweils nur eine Eingabe wird verändert. Alle abhängigen Ergebnisse werden neu berechnet. Keine Änderung der Kundendaten. Leere Werte und relative Nullwert-Variationen werden nicht getestet.','Isolated scenarios versus today: change only one input and recalculate all dependent results. Customer data stays unchanged. Blank values and relative variations of zero are not tested.')));
+  content.append(node('p',tr('Welche Annahmen verändern das Ergebnis am stärksten? Jeweils eine Eingabe wird um bis zu ±20 % variiert.','Which assumptions affect the result most? One input at a time is varied by up to ±20%.'),'sensitivityIntro'));
   if(!data.baseline){content.append(node('p',tr('Für dieses Szenario fehlen noch erforderliche Angaben oder ein KI-Schritt.','This scenario needs complete inputs or an AI step.')));return;}
-  content.append(node('p',tr('Basis: ','Baseline: ')+(view==='rules'?tr('Regeln vs. heute','Rules vs. today'):tr('KI vs. heute','AI vs. today'))+' · ROI '+fmt(data.baseline.roi)+' % · '+tr('Nettonutzen ','Net value ')+money(data.baseline.net)+' · '+tr('Amortisation ','Payback ')+(finite(data.baseline.payback)?fmt(data.baseline.payback)+' '+tr('Mon.','mo') :tr('nicht erreicht','not reached'))));
-  const label=node('label',tr('Rangfolge nach größter absoluter Abweichung','Rank by largest absolute deviation'));label.htmlFor='roiSensitivitySort';content.append(label);
+  content.append(node('p',(view==='rules'?tr('Regeln vs. heute','Rules vs. today'):tr('KI vs. heute','AI vs. today'))+' · '+tr('Basis: ','Baseline: ')+'ROI '+fmt(data.baseline.roi)+' % · '+tr('Netto ','Net ')+money(data.baseline.net)+' · '+tr('Amortisation ','Payback ')+(finite(data.baseline.payback)?fmt(data.baseline.payback)+' '+tr('Mon.','mo'):tr('nicht erreicht','not reached')),'sensitivityIntro'));
+  const label=node('label',tr('Einfluss auf','Impact on'));label.htmlFor='roiSensitivitySort';content.append(label);
   const select=node('select');select.id='roiSensitivitySort';
   if(sort==='roi'&&!finite(data.baseline.roi))sort='net';
-  for(const [key,name] of [['roi',tr('ROI (Prozentpunkte)','ROI (percentage points)')],['net',tr('Nettonutzen (€)','Net value (€)')],['payback',tr('Amortisationsdauer (Monate)','Payback period (months)')]]){const o=node('option',name);o.value=key;if(key==='roi'&&!finite(data.baseline.roi))o.disabled=true;select.append(o);}
-  select.value=sort;select.onchange=()=>{sort=select.value;render();};content.append(select);
-  const rows=data.rows.slice().sort((a,b)=>{const x=score(a,sort,data.baseline),y=score(b,sort,data.baseline);return x===y?a.id.localeCompare(b.id):y>x?1:-1;});
-  if(!rows.length){content.append(node('p',tr('Keine wirksamen relativen Änderungen der angegebenen Parameter.','No effective relative changes to the supplied parameters.')));return;}
-  for(const [i,row] of rows.slice(0,all?rows.length:5).entries()){
+  for(const [key,name] of [['roi','ROI'],['net',tr('Nettonutzen (€)','Net value (€)')],['payback',tr('Amortisationsdauer (Monate)','Payback period (months)')]]){const o=node('option',name);o.value=key;if(key==='roi'&&!finite(data.baseline.roi))o.disabled=true;select.append(o);}
+  select.value=sort;select.onchange=()=>{sort=select.value;render();$id('roiSensitivitySort')?.focus();};content.append(select);
+  const rows=data.rows.slice().sort((a,b)=>{const x=score(a,sort,data.baseline),y=score(b,sort,data.baseline);return x===y?a.id.localeCompare(b.id):y>x?1:-1;}).filter(r=>score(r,sort,data.baseline)>1e-8);
+  if(!rows.length){content.append(node('p',tr('Keine wirksamen relativen Änderungen für diese Kennzahl.','No effective relative changes for this metric.')));return;}
+  const transitions=r=>sort==='payback'?r.scenarios.filter(s=>s.result&&finite(s.result.payback)!==finite(data.baseline.payback)):[];
+  const top=rows[0],critical=transitions(top),strongest=top.scenarios.filter(s=>effect(s,sort)!==null).sort((a,b)=>Math.abs(effect(b,sort))-Math.abs(effect(a,sort)))[0];
+  const insight=node('div',undefined,'sensitivityInsight');
+  insight.append(node('small',tr('Größter wirtschaftlicher Hebel','Largest economic driver')),node('strong',tr(top.de,top.en)));
+  if(critical.length){
+   const c=critical[0];insight.append(node('p',changeLabel(c)+' → '+(finite(c.result.payback)?tr('Amortisation wird erreichbar','Payback becomes achievable'):tr('Amortisation entfällt','Payback becomes unreachable'))));
+  }else if(strongest)insight.append(node('p',changeLabel(strongest)+' '+tr('Eingabewert','input')+' → '+formatEffect(strongest,sort)+' '+tr('Auswirkung','impact')));
+  content.append(insight);
+  const legend=node('div',undefined,'sensitivityLegend');
+  legend.append(node('span',tr('← Verschlechterung','← Worse')),node('span',tr('Basis','Base')),node('span',tr('Verbesserung →','Better →')));content.append(legend);
+  const scale=Math.max(1e-10,...rows.flatMap(r=>r.scenarios.map(s=>Math.abs(effect(s,sort)??0))));
+  for(const [i,row] of rows.slice(0,all?rows.length:3).entries()){
    const wrap=node('div',undefined,'sensitivityRow'),head=node('div',undefined,'sensitivityHead');
    const title=node('button',(i+1)+'. '+tr(row.de,row.en)+' ↗');title.type='button';title.dataset.sensitivityId=row.id;title.title=tr('Zur Eingabe springen','Go to input');title.onclick=()=>{if(!goto(row))title.title=tr('Eingabefeld ist in diesem Modus nicht verfügbar','Input is unavailable in this mode');};
    head.append(title,node('small',fmt(row.value)+' '+unitLabel(row.unit)));wrap.append(head);
-   const values=node('div',undefined,'sensitivityValues');
+   const finiteScenarios=row.scenarios.filter(s=>effect(s,sort)!==null);
+   const worst=finiteScenarios.filter(s=>effect(s,sort)<0).sort((a,b)=>effect(a,sort)-effect(b,sort))[0];
+   const best=finiteScenarios.filter(s=>effect(s,sort)>0).sort((a,b)=>effect(b,sort)-effect(a,sort))[0];
+   const track=node('div',undefined,'sensitivityTrack');track.setAttribute('aria-hidden','true');
+   for(const [scenario,cls,left] of [[worst,'sensitivityBad',true],[best,'sensitivityGood',false]])if(scenario){
+    const bar=node('div',undefined,'sensitivityBar '+cls),width=Math.abs(effect(scenario,sort))/scale*50;
+    bar.style.width=width+'%';bar.style.left=(left?50-width:50)+'%';track.append(bar);
+   }
+   wrap.append(track);
+   const ends=node('div',undefined,'sensitivityEnds');
+   for(const [scenario,side] of [[worst,'bad'],[best,'good']]){
+    const el=node('span');const value=node('b',scenario?formatEffect(scenario,sort):'—');
+    value.style.color=scenario?(side==='bad'?'#a3324c':'#146c59'):'#756879';
+    el.append(value);if(scenario)el.append(node('small',tr('bei ','at ')+changeLabel(scenario)+' '+tr('Eingabe','input')));ends.append(el);
+   }
+   wrap.append(ends);
+   for(const c of transitions(row))wrap.append(node('div',changeLabel(c)+' → '+(finite(c.result.payback)?tr('Amortisation erreichbar: ','Payback achievable: ')+fmt(c.result.payback)+' '+tr('Mon.','mo'):tr('Amortisation nicht erreichbar','Payback unreachable')),'sensitivityTransition'));
+   const toggle=node('button',expanded.has(row.id)?tr('− Szenarien ausblenden','− Hide scenarios'):tr('+ Alle 4 Szenarien & Kennzahlen','+ All 4 scenarios & metrics'),'sensitivityToggle');toggle.type='button';toggle.setAttribute('aria-expanded',String(expanded.has(row.id)));toggle.setAttribute('aria-controls','sensitivity-details-'+row.id);wrap.append(toggle);
+   const values=node('div',undefined,'sensitivityValues');values.id='sensitivity-details-'+row.id;
+   values.hidden=!expanded.has(row.id);values.style.display=values.hidden?'none':'grid';
+   toggle.onclick=()=>{const open=!expanded.has(row.id);if(open)expanded.add(row.id);else expanded.delete(row.id);values.hidden=!open;values.style.display=open?'grid':'none';toggle.setAttribute('aria-expanded',String(open));toggle.textContent=open?tr('− Szenarien ausblenden','− Hide scenarios'):tr('+ Alle 4 Szenarien & Kennzahlen','+ All 4 scenarios & metrics');};
    for(const s of row.scenarios){
     const block=node('div',undefined,'sensitivityValue');
     const actual=Math.abs(s.actualPercent-s.percent)>1e-7?' ('+signed(s.actualPercent,1)+' % '+tr('effektiv','actual')+')':'';
@@ -187,15 +223,15 @@
     else{
      block.append(node('span','ROI: '+(finite(s.roi)?signed(s.roi)+' '+tr('PP','pp'):'—')));
      block.append(node('span',tr('Nettonutzen: ','Net value: ')+money(s.net)));
-     let pb=finite(s.payback)?signed(s.payback)+' '+tr('Mon.','mo'):finite(s.result.payback)?fmt(s.result.payback)+' '+tr('Mon. (jetzt erreichbar)','mo (now achievable)'):tr('nicht erreicht','not reached');
+     const pb=finite(s.payback)?signed(s.payback)+' '+tr('Mon.','mo'):finite(s.result.payback)?fmt(s.result.payback)+' '+tr('Mon. (jetzt erreichbar)','mo (now achievable)'):tr('nicht erreicht','not reached');
      block.append(node('span',tr('Amortisation: ','Payback: ')+pb));
     }
     values.append(block);
    }
    wrap.append(values);content.append(wrap);
   }
-  if(rows.length>5){const more=node('button',all?tr('Weniger anzeigen','Show fewer'):tr('Alle '+rows.length+' Hebel anzeigen','Show all '+rows.length+' drivers'),'sensitivityMore');more.type='button';more.onclick=()=>{all=!all;render();};content.append(more);}
-  content.append(node('p',tr('Grenzen und Ganzzahlen können die effektive Variation einschränken. Die Rangfolge gilt nur für dieses Szenario; Wechselwirkungen zwischen mehreren Eingaben werden nicht separat getestet. Änderungen am Zeithorizont vergleichen unterschiedliche Zeiträume.','Bounds and integers can limit the effective variation. Rankings apply to this scenario only; interactions between multiple inputs are not separately tested. Horizon changes compare different periods.')));
+  if(rows.length>3){const more=node('button',all?tr('Weniger anzeigen','Show fewer'):tr('Alle '+rows.length+' Hebel anzeigen','Show all '+rows.length+' drivers'),'sensitivityMore');more.type='button';more.onclick=()=>{all=!all;render();content.querySelector('.sensitivityMore')?.focus();};content.append(more);}
+  content.append(node('p',tr('Balken: größte getestete Abweichung je Richtung (±10/20 %). Grenzen und Rundungen berücksichtigt. Eingaben bleiben unverändert. Nullwerte, fehlende Angaben und Wechselwirkungen sind nicht getestet. Zeithorizont: unterschiedliche Zeiträume.','Bars: largest tested deviation in each direction (±10/20%). Bounds and rounding apply. Inputs stay unchanged. Zero, missing values and interactions are not tested. Horizon: different periods.'),'sensitivityFoot'));
  }
  const queue=()=>{if(!queued){queued=true;requestAnimationFrame(()=>{queued=false;render();});}};
  panel.addEventListener('toggle',queue);
