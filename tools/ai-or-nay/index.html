@@ -2995,6 +2995,7 @@ function buildQuick(){
   return `<details class="guideRoleGroup" data-roleid="${p.id}" open><summary><b>👤 ${clean(p.name||tr('Neue Mitarbeiterrolle','New employee role'))}</b><small>${ownSteps.length} ${tr('Tasks','tasks')}</small></summary><div class="guideRoleBody">
   <div class="guideQuickGrid">${quickField('role:'+p.id+':name',tr('Rollenbezeichnung','Role name'),p.name,'text')}${quickField('role:'+p.id+':salary',tr('Vergütungsart','Compensation type'),p.salaryType,'select',salaryOpts)}</div>
   ${quickField('role:'+p.id+':rate',tr('Vergütung (€)','Compensation (€)'),p.rate,'number',null,'step="0.01"')}
+  ${timeMode==='staff'?quickField('role:'+p.id+':amount',p.salaryType==='hour'?tr('Einsatz (h/Woche)','Allocation (h/week)'):tr('Einsatz (FTE)','Allocation (FTE)'),p.amount,'number',null,'step="0.01"'):''}
   <div class="guideRoleKpis" data-role-kpi="${p.id}">${tr('Personalkosten vor/nach KI pro Monat','Monthly labor costs before/after AI')}: <b>${beforeCost===null?'—':euroExact(beforeCost)} → ${euroExact(afterCost)}</b></div>
   <div class="guideQuickSteps">${tasks}</div>
   <div class="guideQuickActions"><button type="button" class="quickAdd" data-quick-action="addTask" data-roleid="${p.id}">＋ ${tr('Task hinzufügen','Add task')}</button><button type="button" class="quickRemove" data-quick-action="removeRole" data-roleid="${p.id}" ${staff.length<=1?'disabled':''}>× ${tr('Rolle entfernen','Remove role')}</button></div></div></details>`;
@@ -3048,7 +3049,7 @@ function tweak(field,value){const v=num(value);
  else if(field==='horizon'){ranges.horizon=v;renderGlobals();}
  else if(field==='realization'){ranges.realization=v;renderGlobals();}
  else if(field.startsWith('role:')){const [,id,key]=field.split(':'),p=staff.find(a=>a.id===+id);if(!p)return;
-  if(key==='name')p.name=value;else if(key==='salary'){p.salaryType=value;p.rate=null;}else if(key==='rate')p.rate=v;}
+  if(key==='name')p.name=value;else if(key==='salary'){p.salaryType=value;p.rate=null;}else if(key==='rate')p.rate=v;else if(key==='amount')p.amount=v;}
  else if(field.startsWith('step:')){const [,id,key]=field.split(':'),t=steps.find(a=>a.id===+id);if(!t)return;
   if(key==='name')t.name=value;
   else if(key==='mode'){t.mode=value;if(!['assist','auto'].includes(value)){t.share=null;t.future=null;t.model='';}if(value!=='rules')t.rules=null;}
