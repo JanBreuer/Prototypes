@@ -525,6 +525,61 @@ body.guideResults .resultsPanel{margin-bottom:100px!important}
 @media(max-width:840px){#guideTop{flex-wrap:wrap}.guideActions{width:100%;justify-content:flex-end}.guideActions button{padding:7px 9px;font-size:11px}}
 
 /* Demo library: scoped to the native modal; no shared design changes. */
+
+/* Demo baseline preview: a compact visual bridge, not a second ROI calculator. */
+
+#demoCasePicker[data-stage="preview"]{width:min(700px,calc(100% - 24px));max-height:94dvh}
+#demoCasePicker .demoTeam{border:1px solid #e4dce7;border-radius:11px;padding:11px 12px;margin:10px 0;display:grid;gap:7px}
+#demoCasePicker .demoTeamHead{display:flex;align-items:center;gap:10px;justify-content:space-between;flex-wrap:wrap}
+#demoCasePicker .demoTeamHead strong{color:#31253a;font-size:14px}
+#demoCasePicker .demoTeamHead small{display:block;line-height:1.35}
+#demoCasePicker .demoPersonas{display:flex;align-items:center;gap:3px;flex-wrap:wrap;max-width:100%}
+#demoCasePicker .demoPersonas svg{width:21px;height:24px;stroke:#a4005b;fill:#fce5f2;stroke-width:1.4;stroke-linecap:round;stroke-linejoin:round}
+#demoCasePicker .demoPersonas b{font-size:12px;color:#715f78;margin-left:2px}
+#demoCasePicker .demoPerPerson{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:5px}
+#demoCasePicker .demoPerPerson div{background:#faf7fa;border-radius:7px;padding:7px 8px;min-width:0}
+#demoCasePicker .demoPerPerson strong{display:block;color:#31253a;font-size:clamp(14px,3vw,18px);overflow-wrap:anywhere}
+#demoCasePicker .demoPerPerson small{display:block;font-size:10px;line-height:1.3}
+#demoCasePicker .demoCapacity{display:flex;align-items:center;gap:8px;font-size:11px;color:#715f78;flex-wrap:wrap}
+#demoCasePicker .demoCapacityTrack{height:6px;min-width:60px;flex:1;background:#eee7ef;border-radius:4px;overflow:hidden}
+#demoCasePicker .demoCapacityTrack span{display:block;background:#c60069;height:100%;border-radius:4px}
+#demoCasePicker .demoPreviewActions{position:sticky;bottom:-20px;background:white;padding:8px 0 2px;margin-top:5px}
+@media(max-width:600px){#demoCasePicker .demoTeam{padding:8px;margin:8px 0;gap:5px}#demoCasePicker .demoPersonas svg{width:17px;height:20px}#demoCasePicker .demoPerPerson div{padding:5px}#demoCasePicker .demoPreviewActions{bottom:-14px;padding-bottom:5px}#demoCasePicker .demoPreviewHero strong{font-size:27px}#demoCasePicker .demoPreviewFlow{padding:8px}#demoCasePicker .demoPreviewStep{padding:5px 0}}
+
+#demoCasePicker[data-stage="preview"]{width:min(670px,calc(100% - 24px));max-height:90dvh}
+#demoCasePicker .demoPreviewKicker{font-size:11px;letter-spacing:.08em;color:#a4005b;font-weight:800;text-transform:uppercase;margin-bottom:6px}
+#demoCasePicker .demoPreviewTitle{font-size:clamp(20px,3vw,26px);line-height:1.2;margin:4px 0}
+#demoCasePicker .demoPreviewContext{font-size:12px;color:#715f78;margin:8px 0 14px;line-height:1.45}
+#demoCasePicker .demoPreviewHero{background:#fdf1f8;border:1px solid #efd5e4;padding:15px 16px;border-radius:12px;display:flex;align-items:center;justify-content:space-between;gap:10px}
+#demoCasePicker .demoPreviewHero strong{font-size:clamp(27px,5vw,37px);line-height:1.1;display:block;letter-spacing:-.035em;color:#b90064;margin:3px 0}
+#demoCasePicker .demoPreviewHero small{font-size:12px}
+#demoCasePicker .demoPreviewIcon{width:38px;height:38px;flex-shrink:0;border-radius:10px;display:grid;place-items:center;color:#b90064;background:#fff;border:1px solid #efd5e4}
+#demoCasePicker .demoPreviewIcon svg{width:21px;height:21px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+#demoCasePicker .demoPreviewMetrics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:10px}
+#demoCasePicker .demoPreviewMetric{border:1px solid #e4dce7;border-radius:10px;padding:10px;min-width:0}
+#demoCasePicker .demoPreviewMetric strong{display:block;color:#31253a;font-size:clamp(17px,3.3vw,24px);line-height:1.2;margin-bottom:3px;overflow-wrap:anywhere}
+#demoCasePicker .demoPreviewMetric small{display:block;font-size:11px;line-height:1.3}
+#demoCasePicker .demoPreviewRole{font-size:12px;display:flex;flex-wrap:wrap;justify-content:space-between;gap:4px;color:#715f78;padding:8px 0}
+#demoCasePicker .demoPreviewRole strong{font-size:12px;color:#31253a}
+#demoCasePicker .demoPreviewFlow{border:1px solid #e4dce7;border-radius:11px;padding:12px}
+#demoCasePicker .demoPreviewFlowHead{display:flex;align-items:center;justify-content:space-between;gap:6px;margin-bottom:9px}
+#demoCasePicker .demoPreviewFlowHead h3{margin:0}
+#demoCasePicker .demoPreviewSegment{height:8px;display:flex;overflow:hidden;gap:3px;border-radius:5px;margin-bottom:10px;background:#f3edf4}
+#demoCasePicker .demoPreviewSegment span{background:#e20074;border-radius:3px}
+#demoCasePicker .demoPreviewSegment span+span{background:#b7a5ba}
+#demoCasePicker .demoPreviewStep{display:grid;grid-template-columns:24px minmax(0,1fr) auto;gap:8px;align-items:center;font-size:12px;padding:7px 0}
+#demoCasePicker .demoPreviewStep+.demoPreviewStep{border-top:1px solid #f1eaf1}
+#demoCasePicker .demoPreviewStepNo{display:grid;place-items:center;border-radius:50%;width:22px;height:22px;background:#fce5f2;color:#a4005b;font-weight:800}
+#demoCasePicker .demoPreviewStep:nth-of-type(2) .demoPreviewStepNo{background:#f0eaf1;color:#715f78}
+#demoCasePicker .demoPreviewStep strong{font-size:12px;color:#31253a;white-space:nowrap}
+#demoCasePicker .demoPreviewActions{display:flex;gap:8px;margin-top:14px}
+#demoCasePicker .demoPreviewActions button{padding:11px 15px;font-size:13px;font-weight:750;white-space:normal}
+#demoCasePicker [data-demo-confirm]{flex:1;background:#e20074;color:white;border-color:#e20074}
+#demoCasePicker [data-demo-back]{flex:0 0 auto}
+#demoCasePicker .demoPreviewFoot{font-size:11px;color:#715f78;line-height:1.35;margin:10px 0 0}
+#demoCasePicker .demoPreviewActions button:focus-visible{outline:2px solid #b90064;outline-offset:2px}
+@media(max-width:600px){#demoCasePicker .demoPreviewHero{padding:12px}#demoCasePicker .demoPreviewMetric{padding:8px}#demoCasePicker .demoPreviewContext{margin:6px 0 10px}#demoCasePicker .demoPreviewRole{padding:6px 0}#demoCasePicker .demoPreviewFlow{padding:9px}#demoCasePicker .demoPreviewActions{margin-top:10px}}
+
 #demoCasePicker{width:min(850px,calc(100% - 24px));max-height:85dvh;overflow:auto;box-sizing:border-box;border:1px solid #e4dce7;border-radius:16px;background:white;color:#31253a;padding:20px;box-shadow:0 12px 50px #31253a33}
 #demoCasePicker::backdrop{background:#31253a66}
 #demoCasePicker .demoPickerHeader{display:flex;align-items:center;justify-content:space-between;gap:12px}
@@ -2488,10 +2543,14 @@ const demoCases=[
     "future": 5,
     "manual": 3,
     "adoption": 80,
-    "realization": 65,
+    "realization": 45,
     "setup": 10000,
     "ops": 500,
-    "fee": 300
+    "fee": 300,
+    "team": 3,
+    "ruleTimeSaving": 10,
+    "ruleSetupShare": 0.4,
+    "ruleOpexShare": 0.35
   },
   {
     "id": "meeting",
@@ -2523,13 +2582,17 @@ const demoCases=[
     "volume": 240,
     "rate": 65,
     "before": 35,
-    "future": 12,
+    "future": 18,
     "manual": 8,
-    "adoption": 85,
-    "realization": 60,
+    "adoption": 75,
+    "realization": 30,
     "setup": 5000,
     "ops": 200,
-    "fee": 300
+    "fee": 300,
+    "team": 6,
+    "ruleTimeSaving": 8,
+    "ruleSetupShare": 0.35,
+    "ruleOpexShare": 0.35
   },
   {
     "id": "customer",
@@ -2564,10 +2627,14 @@ const demoCases=[
     "future": 3,
     "manual": 2,
     "adoption": 75,
-    "realization": 65,
+    "realization": 55,
     "setup": 18000,
     "ops": 800,
-    "fee": 1100
+    "fee": 1100,
+    "team": 6,
+    "ruleTimeSaving": 10,
+    "ruleSetupShare": 0.4,
+    "ruleOpexShare": 0.4
   },
   {
     "id": "software",
@@ -2581,8 +2648,8 @@ const demoCases=[
       "Engineering"
     ],
     "description": [
-      "Entwickler nutzen KI für wiederkehrende Implementierungsaufgaben; Code-Review und Tests bleiben menschlich verantwortet.",
-      "Developers use AI for recurring implementation tasks; code review and testing remain human-owned."
+      "Ein Entwicklerteam nutzt KI für kleine, wiederkehrende Implementierungsaufgaben (keine kompletten Features); Code-Review und Tests bleiben menschlich verantwortet.",
+      "A developer team uses AI for small recurring implementation tasks (not complete features); code review and testing remain human-owned."
     ],
     "task": [
       "Implementierung und Testentwurf",
@@ -2599,13 +2666,17 @@ const demoCases=[
     "volume": 350,
     "rate": 85,
     "before": 75,
-    "future": 42,
+    "future": 45,
     "manual": 30,
     "adoption": 70,
-    "realization": 50,
+    "realization": 30,
     "setup": 14000,
     "ops": 350,
-    "fee": 900
+    "fee": 900,
+    "team": 6,
+    "ruleTimeSaving": 5,
+    "ruleSetupShare": 0.35,
+    "ruleOpexShare": 0.4
   },
   {
     "id": "invoice",
@@ -2643,7 +2714,8 @@ const demoCases=[
     "realization": 55,
     "setup": 24000,
     "ops": 650,
-    "fee": 500
+    "fee": 500,
+    "team": 3
   },
   {
     "id": "ba",
@@ -2681,7 +2753,11 @@ const demoCases=[
     "realization": 45,
     "setup": 29000,
     "ops": 350,
-    "fee": 450
+    "fee": 450,
+    "team": 4,
+    "ruleTimeSaving": 10,
+    "ruleSetupShare": 0.35,
+    "ruleOpexShare": 0.35
   },
   {
     "id": "knowledge",
@@ -2719,7 +2795,11 @@ const demoCases=[
     "realization": 45,
     "setup": 22000,
     "ops": 700,
-    "fee": 600
+    "fee": 600,
+    "team": 10,
+    "ruleTimeSaving": 12,
+    "ruleSetupShare": 0.3,
+    "ruleOpexShare": 0.3
   },
   {
     "id": "report",
@@ -2757,7 +2837,8 @@ const demoCases=[
     "realization": 60,
     "setup": 18000,
     "ops": 400,
-    "fee": 500
+    "fee": 500,
+    "team": 3
   },
   {
     "id": "bid",
@@ -2795,7 +2876,11 @@ const demoCases=[
     "realization": 50,
     "setup": 9000,
     "ops": 350,
-    "fee": 450
+    "fee": 450,
+    "team": 2,
+    "ruleTimeSaving": 10,
+    "ruleSetupShare": 0.35,
+    "ruleOpexShare": 0.35
   },
   {
     "id": "contract",
@@ -2833,7 +2918,8 @@ const demoCases=[
     "realization": 40,
     "setup": 16000,
     "ops": 600,
-    "fee": 500
+    "fee": 500,
+    "team": 3
   },
   {
     "id": "hr",
@@ -2871,7 +2957,8 @@ const demoCases=[
     "realization": 40,
     "setup": 9000,
     "ops": 300,
-    "fee": 350
+    "fee": 350,
+    "team": 2
   },
   {
     "id": "quality",
@@ -2885,8 +2972,8 @@ const demoCases=[
       "Operations"
     ],
     "description": [
-      "KI strukturiert Abweichungsberichte einer kleinen Produktion; Ursachenanalyse und Maßnahmenfreigabe bleiben manuell.",
-      "AI structures nonconformance reports for a small production operation; root-cause analysis and corrective-action approval remain manual."
+      "Ein Qualitätsteam mehrerer Fertigungslinien strukturiert Abweichungsberichte; Ursachenanalyse und Maßnahmenfreigabe bleiben manuell.",
+      "A quality team covering several production lines structures nonconformance reports; root-cause analysis and corrective-action approval remain manual."
     ],
     "task": [
       "Abweichungsbericht strukturieren",
@@ -2909,13 +2996,14 @@ const demoCases=[
     "realization": 40,
     "setup": 22000,
     "ops": 500,
-    "fee": 600
+    "fee": 600,
+    "team": 4
   }
 ];
 function demoData(c){
  const lang=L()==='en'?1:0, t=x=>x[lang], illustrative=tr('Illustrative Annahmen, keine Kundendaten oder Marktbenchmarks.','Illustrative assumptions, not customer data or market benchmarks.');
  return {inputs:{
-   caseName:'Demo · '+t(c.name),owner:t(c.area),description:illustrative+' '+t(c.description),
+   caseName:'Demo · '+t(c.name),owner:t(c.area),description:illustrative+' '+t(c.description)+' '+tr('Teamannahme: ','Illustrative team: ')+c.team+' '+tr('Personen; Gesamtvolumen, keine Kopfzahl im ROI-Modell.','people; aggregate volume, headcount not an ROI input.'),
    kpi:tr('Bearbeitungszeit bei unveränderter Freigabequalität','Processing time with unchanged approval quality'),
    volume:c.volume,fulltime:40,dayHours:8,grossLoad:25,portfolioMode:'single',
    portfolioAllocation:'equal',currentTechMonthly:0,remainingTechMonthly:0,fx:0.89494,
@@ -2924,15 +3012,48 @@ function demoData(c){
    contractFee:c.fee,extraCoordDays:0,extraDependencyOpex:0,
    rulesName:tr('Vorlagen und feste Regeln','Templates and fixed rules'),
    rulesDescription:tr('Standardisierte Vorlagen und regelbasierte Vorarbeit; keine generative KI.','Standardized templates and rule-based preparation; no generative AI.'),
-   rulesSetup:Math.round(c.setup*.25),rulesOpex:Math.round(c.ops*.25)
+   rulesSetup:Math.round(c.setup*(c.ruleSetupShare??.25)),rulesOpex:Math.round(c.ops*(c.ruleOpexShare??.25))
  },costMode:'advanced',timeMode:'steps',comparisonMode:'today',staff:[{id:1,name:t(c.role),rate:c.rate,salaryType:'hour',amount:null}],
  steps:[
-  {id:1,role:1,name:t(c.task),before:c.before,future:c.future,rules:Math.round(c.before*.85*10)/10,mode:'assist',share:c.adoption,model:'contract',review:'always',criticality:'medium',errorRate:0,rework:0,aiError:0,aiRework:0,depLevel:'none',depRate:0,depMinutes:0},
+  {id:1,role:1,name:t(c.task),before:c.before,future:c.future,rules:Math.round(c.before*(1-(c.ruleTimeSaving??15)/100)*10)/10,mode:'assist',share:c.adoption,model:'contract',review:'always',criticality:'medium',errorRate:0,rework:0,aiError:0,aiRework:0,depLevel:'none',depRate:0,depMinutes:0},
   {id:2,role:1,name:t(c.reviewTask),before:c.manual,rules:c.manual,mode:'manual',errorRate:0,rework:0,aiError:0,aiRework:0}
  ],ranges:{horizon:24,realization:c.realization}};
 }
 function loadGuideDemo(c){
  loadData(demoData(c));hasResults=true;showResults();
+}
+function showDemoPreview(dialog,c){
+ // The catalog uses a single hourly-cost role, two current task durations (including routine rework)
+ // and explicit current technology costs. Read the same fresh payload that will be loaded on confirmation.
+ const data=demoData(c), {inputs,staff:roles,steps:tasks}=data;
+ const minutes=tasks.reduce((sum,t)=>sum+t.before,0);
+ const hours=inputs.volume*minutes/60;
+ const labor=tasks.reduce((sum,t)=>sum+t.before*inputs.volume/60*roles.find(r=>r.id===t.role).rate,0);
+ const tech=Number(inputs.currentTechMonthly);
+ const team=c.team, monthlyCapacity=inputs.fulltime*52/12, fte=hours/monthlyCapacity, utilization=fte/team;
+ const persona='<svg viewBox="0 0 24 28" aria-hidden="true"><circle cx="12" cy="7" r="4.5"/><path d="M3 26v-5a9 9 0 0 1 18 0v5z"/></svg>';
+ const n=(v,d=1)=>new Intl.NumberFormat(L()==='en'?'en-IE':'de-DE',{maximumFractionDigits:d}).format(v);
+ const money=(v,d=0)=>new Intl.NumberFormat(L()==='en'?'en-IE':'de-DE',{style:'currency',currency:'EUR',maximumFractionDigits:d,minimumFractionDigits:d}).format(v);
+ const local=x=>x[L()==='en'?1:0];
+ const metric=(id,value,label)=>`<div class="demoPreviewMetric"><strong data-demo-metric="${id}">${value}</strong><small>${label}</small></div>`;
+ dialog.dataset.stage='preview';
+ dialog.innerHTML=`<div class="demoPickerHeader"><div><div class="demoPreviewKicker">${tr('Demo · Ist-Situation','Demo · Current situation')}</div><h2 id="demoPickerTitle" class="demoPreviewTitle" tabindex="-1">${clean(local(c.name))}</h2></div><button type="button" data-demo-close aria-label="${tr('Schließen','Close')}">×</button></div>
+ <p class="demoPreviewContext">${clean(local(c.description))}</p>
+ <div class="demoPreviewHero"><div><small>${tr('Heutige Prozesskosten · gesamtes Team / Monat','Current process cost · whole team / month')}</small><strong data-demo-metric="cost">${money(labor+tech,2)}</strong><small>${tr('Personal','Labor')}: ${money(labor)} · ${tr('Technologie','Technology')}: ${money(tech)}</small></div><div class="demoPreviewIcon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M3 3v18h18M7 16v-4m5 4V8m5 8V5"/></svg></div></div>
+ <div class="demoPreviewMetrics">${metric('volume',n(inputs.volume,0),tr('Vorgänge im Team / Monat','Team cases / month'))}${metric('hours',n(hours),tr('Teamstunden / Monat','Team hours / month'))}${metric('minutes',n(minutes)+' min',tr('Zeit je Vorgang','Time per case'))}</div>
+ <section class="demoTeam" aria-label="${tr('Team und Arbeitslast','Team and workload')}">
+ <div class="demoTeamHead"><div><strong data-demo-metric="team">${n(team,0)} ${tr('Personen','people')}</strong><small>${clean(roles[0].name)} · ${money(roles[0].rate)} / h</small></div><div class="demoPersonas" aria-hidden="true">${persona.repeat(team)}</div></div>
+ <div class="demoCapacity"><strong data-demo-metric="fte">${n(fte,2)} FTE</strong><span>${tr('Prozessbedarf','Process workload')}</span><div class="demoCapacityTrack" aria-hidden="true"><span style="width:${Math.min(100,utilization*100)}%"></span></div><span data-demo-metric="share">${n(utilization*100,0)} % ${tr('der nominellen Teamzeit','of nominal team hours')}</span></div>
+ <div class="demoPerPerson"><div><strong data-demo-metric="person-volume">${n(inputs.volume/team)}</strong><small>${tr('Vorgänge / Person / Monat','Cases / person / month')}</small></div><div><strong data-demo-metric="person-hours">${n(hours/team)} h</strong><small>${tr('Zeit / Person / Monat','Hours / person / month')}</small></div><div><strong data-demo-metric="person-cost">${money(labor/team)}</strong><small>${tr('Prozess-Personalkosten / Person / Monat','Process labor cost / person / month')}</small></div></div>
+ <small>${tr('Angenommene Teamgröße; gleichmäßige Verteilung. 40 h/Woche je Vollzeitkraft, ohne Abwesenheiten. Kosten sind anteilige Vollkosten, kein Gehalt.','Illustrative team size; equal distribution. 40 h/week per full-time employee, before absences. Costs are allocated fully loaded costs, not salaries.')}</small></section>
+ <div class="demoPreviewFlow"><div class="demoPreviewFlowHead"><h3>${tr('Heutiger Ablauf','Current workflow')}</h3><small>${tr('100 % manuell','100% manual')}</small></div><div class="demoPreviewSegment" aria-hidden="true">${tasks.map(t=>`<span style="flex:${t.before}"></span>`).join('')}</div>
+ ${tasks.map((t,i)=>`<div class="demoPreviewStep"><span class="demoPreviewStepNo">${i+1}</span><span>${clean(t.name)}</span><strong>${n(t.before)} min</strong></div>`).join('')}</div>
+ <p class="demoPreviewFoot">${tr('Illustrative Annahmen · keine Kundendaten. Berechnung ersetzt aktuelle Eingaben.','Illustrative assumptions · no customer data. Calculating replaces current inputs.')}</p>
+ <div class="demoPreviewActions"><button type="button" data-demo-back>← ${tr('Zurück','Back')}</button><button type="button" data-demo-confirm>${tr('KI-Potenzial berechnen','Calculate AI potential')} →</button></div>`;
+ dialog.querySelector('[data-demo-close]').onclick=()=>dialog.close();
+ dialog.querySelector('[data-demo-back]').onclick=()=>{showDemoPicker();dialog.querySelector('[data-demo-case="'+c.id+'"]')?.focus();};
+ dialog.querySelector('[data-demo-confirm]').onclick=()=>{dialog.close();loadGuideDemo(c);};
+ dialog.scrollTop=0;dialog.querySelector('#demoPickerTitle').focus({preventScroll:true});
 }
 function showDemoPicker(){
  let dialog=g('demoCasePicker');
@@ -2940,16 +3061,18 @@ function showDemoPicker(){
   dialog=document.createElement('dialog');dialog.id='demoCasePicker';dialog.setAttribute('aria-labelledby','demoPickerTitle');
   document.body.appendChild(dialog);
  }
+ dialog.dataset.stage='selection';
  const label={positive:tr('Klar positiv','Clearly positive'),borderline:tr('Grenzwertig','Borderline'),negative:tr('Negativ','Negative')};
  const local=x=>x[L()==='en'?1:0];
  const money=n=>new Intl.NumberFormat(L()==='en'?'en-IE':'de-DE',{style:'currency',currency:'EUR',maximumFractionDigits:0}).format(n);
  dialog.innerHTML=`<div class="demoPickerHeader"><h2 id="demoPickerTitle">${tr('Demo-Use-Case auswählen','Choose a demo use case')}</h2><button type="button" data-demo-close aria-label="${tr('Schließen','Close')}">×</button></div>
- <p class="demoPickerNote">${tr('Alle Werte sind illustrative Annahmen, keine Kunden- oder Benchmarkdaten. Einstufung bezieht sich auf KI vs. heute über 24 Monate (grenzwertig: ROI innerhalb ±15 %). Auswahl ersetzt die aktuellen Eingaben; bei Bedarf vorher speichern.','All values are illustrative assumptions, not customer or benchmark data. Categories refer to AI vs. today over 24 months (borderline: ROI within ±15%). Selecting replaces current inputs; save first if needed.')}</p>
- ${Object.entries(label).map(([band,title])=>`<section class="demoPickerGroup"><h3>${title}</h3><div class="demoPickerGrid">${demoCases.filter(c=>c.band===band).map(c=>`<button type="button" data-demo-case="${c.id}"><strong>${clean(local(c.name))}</strong><small>${clean(local(c.area))} · ${c.volume.toLocaleString(L())} ${tr('Vorgänge/Monat','cases/month')}</small><span>${clean(local(c.description))}</span><small>${money(c.setup)} ${tr('Einführung','setup')} · ${money(c.ops+c.fee)}${tr('/Monat KI-Betrieb','/month AI operations')}</small></button>`).join('')}</div></section>`).join('')}
+ <p class="demoPickerNote">${tr('Alle Werte sind illustrative Annahmen, keine Kunden- oder Benchmarkdaten. Einstufung bezieht sich auf KI vs. heute über 24 Monate (grenzwertig: ROI innerhalb ±15 %). Erst die Berechnung ersetzt die aktuellen Eingaben; bei Bedarf vorher speichern.','All values are illustrative assumptions, not customer or benchmark data. Categories refer to AI vs. today over 24 months (borderline: ROI within ±15%). Calculating replaces current inputs; save first if needed.')}</p>
+ ${Object.entries(label).map(([band,title])=>`<section class="demoPickerGroup"><h3>${title}</h3><div class="demoPickerGrid">${demoCases.filter(c=>c.band===band).map(c=>`<button type="button" data-demo-case="${c.id}"><strong>${clean(local(c.name))}</strong><small>${clean(local(c.area))} · ${c.volume.toLocaleString(L())} ${tr('Teamvorgänge/Monat','team cases/month')} · ${c.team} ${tr('Personen (Annahme)','people (assumed)')}</small><span>${clean(local(c.description))}</span><small>${money(c.setup)} ${tr('Einführung','setup')} · ${money(c.ops+c.fee)}${tr('/Monat KI-Betrieb','/month AI operations')}</small></button>`).join('')}</div></section>`).join('')}
  <p class="demoPickerNote">${tr('Alle Parameter sind nach dem Laden frei editierbar.','All parameters are editable after loading.')}</p>`;
  dialog.querySelector('[data-demo-close]').onclick=()=>dialog.close();
- dialog.querySelectorAll('[data-demo-case]').forEach(button=>button.onclick=()=>{const c=demoCases.find(x=>x.id===button.dataset.demoCase);dialog.close();loadGuideDemo(c);});
- dialog.showModal();
+ dialog.querySelectorAll('[data-demo-case]').forEach(button=>button.onclick=()=>{const c=demoCases.find(x=>x.id===button.dataset.demoCase);showDemoPreview(dialog,c);});
+ if(!dialog.open)dialog.showModal();
+ dialog.scrollTop=0;
 }
 
 function quickField(key,title,value,type='number',opts=null,extra=''){
@@ -3438,7 +3561,7 @@ body.guideWizard .guideCostMath{display:none!important}
  const observer=new MutationObserver(()=>{if(document.body.classList.contains('guideResults')){const curr=$('guideLeanResults');if(curr&&!curr.innerHTML.trim()&&window.latest?.results)render();}});
  observer.observe(document.body,{attributes:true,attributeFilter:['class']});
  // The model's existing rules-only handler was compared incrementally; the new view is rules vs today.
- document.addEventListener('click',e=>{if(e.target.closest('[data-demo-case]')||e.target.id==='guideNew')view='ai';},true);
+ document.addEventListener('click',e=>{if(e.target.closest('[data-demo-confirm]')||e.target.id==='guideNew')view='ai';},true);
  const langEvents=['guideDE','guideEN'];langEvents.forEach(id=>$(id)?.addEventListener('click',()=>{if(originalCompare)originalCompare.textContent=say('Regeln vs. heute','Rules vs. today');render();}));
  window.guideRenderLean=render;
  setTimeout(()=>{if(originalCompare)originalCompare.textContent=say('Regeln vs. heute','Rules vs. today');render();},0);
