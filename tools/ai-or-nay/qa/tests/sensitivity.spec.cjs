@@ -47,6 +47,16 @@ test('DE/EN results panel, direct navigation, live updates and mobile',async({pa
  await expect(page.locator('body')).toHaveClass(/guideResults/);
  const panel=page.locator('#roiSensitivity');await panel.locator('summary').click();
  await expect(panel.locator('.sensitivityRow').first()).toBeVisible();
+ await expect(panel.locator('.sensitivityInsight')).toBeVisible();
+ expect(await panel.locator('.sensitivityRow').count()).toBeLessThanOrEqual(3);
+ const first=panel.locator('.sensitivityRow').first(), toggle=first.locator('.sensitivityToggle');
+ await expect(first.locator('.sensitivityValues')).toBeHidden();
+ const before=await page.evaluate(()=>JSON.stringify(serialize()));
+ await toggle.click();await expect(toggle).toHaveAttribute('aria-expanded','true');
+ await expect(first.locator('.sensitivityValue')).toHaveCount(4);
+ await expect(first.locator('.sensitivityValues')).toBeVisible();
+ await toggle.click();await expect(first.locator('.sensitivityValues')).toBeHidden();
+ expect(await page.evaluate(()=>JSON.stringify(serialize()))).toBe(before);
  await expect(panel.locator('summary')).toContainText('Sensitivitätsanalyse');
  await page.locator('#guideEN').click();await expect(panel.locator('summary')).toContainText('Sensitivity analysis');
  await panel.locator('#roiSensitivitySort').selectOption('net');
@@ -57,8 +67,8 @@ test('DE/EN results panel, direct navigation, live updates and mobile',async({pa
  await page.locator('#guideQuick [data-qfield="volume"]').fill('1300');
  await expect.poll(()=>page.evaluate(()=>window.latest.results.currentNet)).not.toBe(old);
  await expect(panel.locator('.sensitivityRow').first()).toBeVisible();
- await panel.scrollIntoViewIfNeeded();await page.screenshot({path:info.outputPath('desktop-sensitivity.png')});
- await page.setViewportSize({width:390,height:844});await panel.scrollIntoViewIfNeeded();
+ await panel.evaluate(el=>el.scrollIntoView({block:'start'}));await page.screenshot({path:info.outputPath('desktop-sensitivity.png')});
+ await page.setViewportSize({width:390,height:844});await panel.evaluate(el=>el.scrollIntoView({block:'start'}));
  expect(await page.evaluate(()=>document.documentElement.scrollWidth)).toBeLessThanOrEqual(391);
  await page.screenshot({path:info.outputPath('mobile-sensitivity.png')});
  await page.locator('#compareRules').click();await expect(panel).toContainText('Rules vs. today');
