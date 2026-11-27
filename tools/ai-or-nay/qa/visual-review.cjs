@@ -17,7 +17,7 @@ async function capture(browser,port,w,h,results){
   await page.goto('http://127.0.0.1:'+port+urlPath);
   await page.locator('#guideTop').waitFor({state:'visible'});
   await page.locator('#guideDE').click();
-  if(results){await page.locator('#guideDemo').click();await page.locator('body.guideResults').waitFor();await page.waitForFunction(()=>window.latest?.results?.errors?.length===0);}
+  if(results){await page.locator('#guideDemo').click();if(await page.locator('#demoCasePicker').isVisible())await page.locator('#demoCasePicker [data-demo-case="it"]').click();await page.locator('body.guideResults').waitFor();await page.waitForFunction(()=>window.latest?.results?.errors?.length===0);}
   else await page.locator('#guidedRoot').waitFor({state:'visible'});
   await page.evaluate(async()=>{await document.fonts.ready;window.scrollTo(0,0);if(document.activeElement instanceof HTMLElement)document.activeElement.blur();});
   return await page.screenshot({animations:'disabled',caret:'hide',scale:'css'});
