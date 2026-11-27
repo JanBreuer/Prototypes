@@ -42,6 +42,27 @@ test('weekly mode ignores inactive per-step time and includes role allocation',a
  const out=await page.evaluate(d=>{loadData(d);const s=serialize();s.timeMode='staff';s.staff[0].amount=40;s.steps[0].savedPct=50;return roiSensitivityAnalyze(s);},base());
  expect(out.rows.some(x=>x.id==='staff.0.amount')).toBe(true);expect(out.rows.some(x=>x.id==='steps.0.before')).toBe(false);
 });
+test('current effort and current compensation are fixed baseline facts in both comparisons',async({page})=>{
+ const out=await page.evaluate(d=>{
+  loadData(d);
+  const snap=serialize(),original=JSON.stringify(snap),ai=roiSensitivityAnalyze(snap,'ai'),rules=roiSensitivityAnalyze(snap,'rules');
+  const salaryModes=['hour','day','gross'].map(salaryType=>{
+   const s=JSON.parse(original);s.staff[0].salaryType=salaryType;
+   s.staff[0].rate=salaryType==='hour'?60:salaryType==='day'?480:124800;
+   return roiSensitivityAnalyze(s,'ai').rows.map(r=>r.id);
+  });
+  const weekly=JSON.parse(original);weekly.timeMode='staff';weekly.staff[0].amount=40;weekly.steps[0].savedPct=50;
+  return {baseline:ai.baseline,ai:ai.rows.map(r=>r.id),rules:rules.rows.map(r=>r.id),salaryModes,weekly:roiSensitivityAnalyze(weekly,'ai').rows.map(r=>r.id),unchanged:JSON.stringify(snap)===original};
+ },base());
+ expect(out.baseline).toEqual({roi:100,net:36000,payback:3});
+ expect(out.ai).toContain('steps.0.future');
+ expect(out.weekly).toContain('steps.0.savedPct');
+ expect(out.rules).toContain('steps.0.rules');
+ for(const ids of [out.ai,out.rules,...out.salaryModes,out.weekly]){
+  expect(ids.some(id=>/^steps\.\d+\.before$|^staff\.\d+\.rate$/.test(id))).toBe(false);
+ }
+ expect(out.unchanged).toBe(true);
+});
 test('DE/EN modal story, scenario selection, direct navigation, live updates and mobile',async({page},info)=>{
  await page.locator('#guideDemo').click();await page.locator('#demoCasePicker [data-demo-case="it"]').click();
  await expect(page.locator('body')).toHaveClass(/guideResults/);
@@ -50,6 +71,9 @@ test('DE/EN modal story, scenario selection, direct navigation, live updates and
  const before=await page.evaluate(()=>JSON.stringify(serialize()));
  await open.click();await expect(dialog).toBeVisible();
  await expect(dialog.locator('.ssTabs button')).toHaveCount(5);
+ await expect(dialog.locator('.ssFixedBaseline')).toContainText('Ist-Bearbeitungszeit und aktuelle Vergütung');
+ expect(await dialog.locator('.ssTabName').allTextContents()).not.toContain('Ist-Zeit');
+ expect(await dialog.locator('.ssTabName').allTextContents()).not.toContain('Vergütung');
  const names=await dialog.locator('.ssTabName').allTextContents();
  expect(names).toHaveLength(5);expect(names.every(n=>n.trim()&&!/^(Hebel|Driver)$/.test(n))).toBe(true);
  await expect(dialog.locator('.ssTabs [aria-current="step"]')).toHaveAttribute('title',await dialog.locator('.ssTitle').textContent());
@@ -69,6 +93,7 @@ test('DE/EN modal story, scenario selection, direct navigation, live updates and
  await page.screenshot({path:info.outputPath('mobile-sensitivity.png')});
  await page.keyboard.press('Escape');await expect(dialog).toBeHidden();
  await page.locator('#guideEN').click();await expect(open).toContainText('Sensitivity analysis');await open.click();
+ await expect(dialog.locator('.ssFixedBaseline')).toContainText('Current processing time and compensation');
  await dialog.locator('[data-metric="net"]').click();
  const jump=dialog.locator('.ssJump');
  for(let n=0;n<100&&await jump.getAttribute('data-sensitivity-id')!=='inputs.volume';n++){
