@@ -809,7 +809,7 @@ const MODELS=[
 const modelById=id=>MODELS.find(x=>x.id===id);
 const contractModel=t=>t.model==='contract';
 const aiStep=t=>['assist','auto'].includes(t.mode);
-const hasContract=()=>steps.some(t=>aiStep(t)&&contractModel(t));
+const hasContract=(snapshot=null)=>(snapshot?snapshot.steps:steps).some(t=>aiStep(t)&&contractModel(t));
 let staff=[],steps=[],staffSeq=0,stepSeq=0,costMode='assisted',timeMode='steps',comparisonMode='today',vals={},ranges={};
 const blankStaff=()=>({id:++staffSeq,name:'',rate:null,salaryType:'hour',amount:null});
 const blankStep=()=>({id:++stepSeq,name:'',before:null,errorRate:null,rework:null,mode:'',rules:null,share:null,future:null,aiError:null,aiRework:null,model:'',scope:'medium',inputTokens:null,outputTokens:null,calls:null,review:'',criticality:'medium',role:'',qualityMode:'assisted',effortShare:null,savedPct:null,rulesSavedPct:null,depLevel:'',depType:'',depSystems:'',depOwner:'',depFallback:'',depNotes:'',depRate:null,depMinutes:null});
@@ -840,10 +840,11 @@ function renderGlobals(){initRange('horizon');initRange('realization');$('horizo
 function getStaff(){return staff.map(e=>({...e}))}
 const staffType=e=>e.salaryType||'hour';
 // Null means no explicit share: remaining effort is distributed equally to those steps.
-function stepWeights(){
+function stepWeights(snapshot=null){
+ const activeSteps=snapshot?snapshot.steps:steps;
  // Shares belong to the assigned employee, never to the sum of all employees.
- return steps.map((t)=>{
-  const siblings=steps.filter(s=>String(s.role)===String(t.role));
+ return activeSteps.map((t)=>{
+  const siblings=activeSteps.filter(s=>String(s.role)===String(t.role));
   const specified=siblings.filter(s=>s.effortShare!==null),total=specified.reduce((n,s)=>n+Math.max(0,Number(s.effortShare)),0),unspecified=siblings.length-specified.length;
   if(!siblings.length)return 0;
   if(!specified.length||(!unspecified&&total===0))return 1/siblings.length;
@@ -868,14 +869,15 @@ function timeSourceUi(){
  :'Die heutige Gesamtzeit wird aus Mitarbeitereinsätzen abgeleitet. Bearbeitungsminuten sind deaktiviert. Die Prozent-Anteile verteilen dieses Zeitbudget auf die Schritte; Einsparungen können separat erfasst werden.';
 }
 
-function roleHourly(t){const e=staff.find(x=>String(x.id)===String(t.role));return e?hourlyOf(e):null;}
-const fulltimeHours=()=>N($('fulltime').value)??ASSUMPTIONS.fulltime;
-function hoursOf(e){let a=N(e.amount);if(a===null||a<0)return null;return staffType(e)==='hour'?a:a*fulltimeHours();}
-function hourlyOf(e){let x=N(e.rate);if(x===null||x<0)return null;switch(staffType(e)){case 'day':return x/(N($('dayHours').value)??ASSUMPTIONS.dayHours);case 'gross':return x*(1+(N($('grossLoad').value)??ASSUMPTIONS.grossLoad)/100)/(52*fulltimeHours());default:return x;}}
-function staffCalc(){
- const all=staff.filter(e=>e.name||e.rate!==null||e.amount!==null),valid=all.filter(e=>hourlyOf(e)!==null&&(timeMode==='steps'||hoursOf(e)!==null&&hoursOf(e)>0)),invalid=all.length-valid.length;
- if(timeMode==='steps')return {hr:valid.length?valid.reduce((a,e)=>a+hourlyOf(e),0)/valid.length:null,weekly:null,totalWeekly:null,invalid,valid:valid.length,active:all.length};
- const weekly=valid.reduce((a,e)=>a+hoursOf(e),0),totalWeekly=valid.reduce((a,e)=>a+hoursOf(e)*hourlyOf(e),0);
+function roleHourly(t,snapshot=null){const e=(snapshot?snapshot.staff:staff).find(x=>String(x.id)===String(t.role));return e?hourlyOf(e,snapshot):null;}
+const fulltimeHours=(snapshot=null)=>N(engineRead(snapshot,'fulltime'))??ASSUMPTIONS.fulltime;
+function hoursOf(e,snapshot=null){let a=N(e.amount);if(a===null||a<0)return null;return staffType(e)==='hour'?a:a*fulltimeHours(snapshot);}
+function hourlyOf(e,snapshot=null){let x=N(e.rate);if(x===null||x<0)return null;switch(staffType(e)){case 'day':return x/(N(engineRead(snapshot,'dayHours'))??ASSUMPTIONS.dayHours);case 'gross':return x*(1+(N(engineRead(snapshot,'grossLoad'))??ASSUMPTIONS.grossLoad)/100)/(52*fulltimeHours(snapshot));default:return x;}}
+function staffCalc(snapshot=null){
+ const activeStaff=snapshot?snapshot.staff:staff, activeMode=snapshot?snapshot.timeMode:timeMode;
+ const all=activeStaff.filter(e=>e.name||e.rate!==null||e.amount!==null),valid=all.filter(e=>hourlyOf(e,snapshot)!==null&&(activeMode==='steps'||hoursOf(e,snapshot)!==null&&hoursOf(e,snapshot)>0)),invalid=all.length-valid.length;
+ if(activeMode==='steps')return {hr:valid.length?valid.reduce((a,e)=>a+hourlyOf(e,snapshot),0)/valid.length:null,weekly:null,totalWeekly:null,invalid,valid:valid.length,active:all.length};
+ const weekly=valid.reduce((a,e)=>a+hoursOf(e,snapshot),0),totalWeekly=valid.reduce((a,e)=>a+hoursOf(e,snapshot)*hourlyOf(e,snapshot),0);
  return {hr:weekly>0?totalWeekly/weekly:null,weekly,totalWeekly,invalid,valid:valid.length,active:all.length};
 }
 const staffRowResult=e=>timeMode==='steps'?`<b>${hourlyOf(e)===null?'—':preciseEuro(hourlyOf(e))+'/h'}</b><span>Schrittzeiten maßgeblich</span>`:`<b>${hoursOf(e)!==null&&hourlyOf(e)!==null?euro(hoursOf(e)*hourlyOf(e)*52/12):'—'}</b><span>pro Monat · ${hourlyOf(e)===null?'Noch offen':preciseEuro(hourlyOf(e))+'/h'}</span>`;
@@ -938,7 +940,7 @@ function renderStep(t,openState){let isAI=t.mode==='assist'||t.mode==='auto',isR
 }
 function modelCards(t,filter='all'){return MODELS.filter(x=>filter==='all'||x.brand===filter).map(x=>{const price=priceModel(x,t);return `<article class="modelCard ${t.model===x.id?'selected':''}"><div class="pills"><span class="pill">${esc(x.brand)}</span><span class="pill">${esc(x.tier)}</span></div><h4>${esc(x.name)}</h4><p><strong>Geeignet:</strong> ${esc(x.good)}</p><p><strong>Grenze:</strong> ${esc(x.bad)}</p><p class="price traceTarget" tabindex="0" data-trace="step:${t.id}:api">$${x.inp} / $${x.out} <small>pro Mio. In/Out</small></p><small>Geschätzt: ${tinyEuro(price*1000)} / 1.000 Anfragen</small><a href="${x.src}" target="_blank" rel="noopener">Offizielle Preisquelle</a><button class="${t.model===x.id?'primary':''}" data-choose-model="${x.id}" data-id="${t.id}">${t.model===x.id?'Ausgewählt ✓':'Dieses Modell wählen'}</button></article>`}).join('')}
 const SIZES={small:{i:400,o:150},medium:{i:1800,o:600},large:{i:8000,o:2400}};
-function priceModel(x,t){let tok=SIZES[t.scope]||SIZES.medium;let input=N(t.inputTokens)??tok.i,out=N(t.outputTokens)??tok.o,calls=N(t.calls)??1,fx=N($('fx').value)??ASSUMPTIONS.fx;return (input*x.inp+out*x.out)/1e6*calls*fx;}
+function priceModel(x,t,snapshot=null){let tok=SIZES[t.scope]||SIZES.medium;let input=N(t.inputTokens)??tok.i,out=N(t.outputTokens)??tok.o,calls=N(t.calls)??1,fx=N(engineRead(snapshot,'fx'))??ASSUMPTIONS.fx;return (input*x.inp+out*x.out)/1e6*calls*fx;}
 function captureOpen(){const open={};document.querySelectorAll('.step').forEach(x=>{open[x.dataset.step]=x.open;open['model'+x.dataset.step]=x.querySelector('[data-model-selector]')?.open;open['dep'+x.dataset.step]=x.querySelector('[data-system-dep]')?.open;open['depAdvanced'+x.dataset.step]=x.querySelector('[data-system-dep] details.group')?.open;open['qt'+x.dataset.step]=x.querySelector('[data-quality-today]')?.open;open['qa'+x.dataset.step]=!!x.querySelector('[data-quality-summary]')?.closest('details')?.open});return open}
 function renderSteps(open){
   // Render each step beneath its owner role. No duplicate global process list.
@@ -961,39 +963,43 @@ function updateRangeVisual(key){
  document.querySelectorAll(`[data-exact-range="${CSS.escape(key)}"]`).forEach(el=>{if(document.activeElement!==el)el.value=voided?'':value;});
 }
 function setRange(key,v){let n=N(v),input=document.querySelector(`[data-range="${CSS.escape(key)}"]`);if(n!==null&&input)n=Math.max(Number(input.min),Math.min(Number(input.max),n));ranges[key]=n;if(key.startsWith('step:')){let [,id,k]=key.split(':');let t=steps.find(x=>x.id===Number(id));if(t)t[k]=n;}document.querySelectorAll(`[data-range="${CSS.escape(key)}"]`).forEach(el=>{if(n!==null)el.value=n;else el.value=el.min});updateRangeVisual(key);calculate();}
+function engineRead(snapshot,id){return snapshot?snapshot.inputs[id]:($(id).type==='checkbox'?$(id).checked:$(id).value);}
 function val(id){return N($(id).value)}
-function costCalc(){
- const isShared=$('portfolioMode').value==='shared';
- $('section4').classList.toggle('sharedCostMode',isShared);
+function costCalc(snapshot=null){
+ const costModeActive=snapshot?snapshot.costMode:costMode;
+ const val=id=>N(engineRead(snapshot,id));
+ const read=id=>engineRead(snapshot,id);
+ const isShared=read('portfolioMode')==='shared';
+ if(!snapshot){$('section4').classList.toggle('sharedCostMode',isShared);}
  if(isShared){
   const setupOverride=val('caseSetupOverride'),opexOverride=val('caseOpexOverride'),setup=setupOverride??0;
-  const hasFlat=hasContract(),contractIncluded=$('contractIncludedInPlatform').value;
+  const hasFlat=hasContract(snapshot),contractIncluded=read('contractIncludedInPlatform');
   const contractFee=hasFlat&&contractIncluded==='no'?val('contractFee'):null;
   const opex=(opexOverride??0)+(hasFlat&&contractIncluded==='no'?(contractFee??0):0);
   const en=window.appLanguage==='en';
   const note=en?'Shared platform: only allocated platform costs and explicitly entered additional use-case costs apply. Blank additional costs default to €0. No automatic implementation, support or IT coordination surcharge.':'Geteilte Plattform: Es gelten nur anteilige Plattformkosten und ausdrücklich eingegebene Zusatzkosten des Use Cases. Leere Zusatzkosten entsprechen 0 €. Keine automatische Schätzung für Einführung, Betrieb oder IT-Abstimmung.';
-  $('contractTerms').hidden=!hasContract();$('dedicatedContractFee').hidden=true;
+ if(!snapshot){$('contractTerms').hidden=!hasContract(snapshot);$('dedicatedContractFee').hidden=true;}
   const parts=[{label:en?'Additional use-case setup':'Zusätzliche Use-Case-Einführung',value:setup,source:setupOverride===null?'assume':'user',unit:'€'},{label:en?'Additional use-case operations/month':'Zusätzlicher Use-Case-Betrieb/Monat',value:opex,source:opexOverride===null?'assume':'user',unit:'€/Monat'}];
-  $('caseExtraLive').textContent=(en?'Additional costs: ':'Zusatzkosten: ')+euroExact(setup)+(en?' one-off · ':' einmalig · ')+euroExact(opex)+(en?' / month':' / Monat');
+ if(!snapshot){$('caseExtraLive').textContent=(en?'Additional costs: ':'Zusatzkosten: ')+euroExact(setup)+(en?' one-off · ':' einmalig · ')+euroExact(opex)+(en?' / month':' / Monat');}
   const unknown=[];
   if(setupOverride===null||opexOverride===null)unknown.push(en?'Shared platform: blank additional use-case costs default to €0; enter any actual incremental costs.':'Geteilte Plattform: Leere Use-Case-Zusatzkosten werden mit 0 € angesetzt; tatsächliche Mehrkosten bei Bedarf ergänzen.');
   if(hasFlat&&contractIncluded==='no'&&contractFee!==null)parts.push({label:en?'Separate flat contract/month':'Separate Vertragspauschale/Monat',value:contractFee,source:'user',unit:'€/Monat'});
   if(hasFlat&&contractIncluded==='yes')parts.push({label:en?'Contract included in shared operations':'Vertrag im Plattformbetrieb enthalten',value:0,source:'user',unit:'€ Zusatzkosten'});
   return {setup,opex,note,unknown,parts,contractFee,setupOverride,opexOverride};
  }
- let setup=null,opex=null,note='',unknown=[],parts=[];if(costMode==='advanced'){
+ let setup=null,opex=null,note='',unknown=[],parts=[];if(costModeActive==='advanced'){
  const a=['costDevelopment','costIntegration','costData','costTraining','costGovernance'],b=['costHosting','costLicense','costMaintenance','costMonitoring','costOperations'];const calcList=keys=>keys.some(k=>val(k)!==null)?keys.reduce((sum,k)=>sum+(val(k)??0),0):null;
  setup=calcList(a);opex=calcList(b);unknown=[...a,...b].filter(k=>val(k)===null);parts=[...a,...b].map(k=>({label:k,value:val(k),source:'user'}));note='Advanced: Summe ausschließlich der eingetragenen Kostenpositionen. Fehlende Positionen bleiben unbekannt und sind keine 0 €.';
 }else{
- let c=$('complexity').value,integr=val('integrations'),d=$('dataReadiness').value,day=val('dayRate')??ASSUMPTIONS.dayRate;
- if(c&&integr!==null&&d){const reusedPlatform=$('portfolioMode').value==='shared';const base=(reusedPlatform?{small:0.5,medium:3,large:12}:{small:2.5,medium:10,large:35})[c],perInterface={small:1,medium:3,large:5}[c],prep={ready:0,partial:4,difficult:12}[d];const days=base+perInterface*integr+prep;setup=days*day;
+ let c=read('complexity'),integr=val('integrations'),d=read('dataReadiness'),day=val('dayRate')??ASSUMPTIONS.dayRate;
+ if(c&&integr!==null&&d){const reusedPlatform=read('portfolioMode')==='shared';const base=(reusedPlatform?{small:0.5,medium:3,large:12}:{small:2.5,medium:10,large:35})[c],perInterface={small:1,medium:3,large:5}[c],prep={ready:0,partial:4,difficult:12}[d];const days=base+perInterface*integr+prep;setup=days*day;
  const host=(reusedPlatform?{small:0,medium:0,large:0}:{small:0,medium:120,large:450})[c],support=(reusedPlatform?{small:0.5,medium:2,large:6}:{small:1.5,medium:6,large:18})[c];opex=host+support*day/8;
  parts=[{label:'Basisaufwand',value:base,source:'assume',unit:'Tage'},{label:`${integr} Schnittstellen × ${perInterface} Tage`,value:perInterface*integr,source:'assume',unit:'Tage'},{label:'Datenaufbereitung',value:prep,source:'assume',unit:'Tage'},{label:'Tagessatz',value:day,source:val('dayRate')===null?'assume':'user',unit:'€/Tag'},{label:'Hosting/Monat',value:host,source:'assume',unit:'€'},{label:'Support/Monat',value:support,source:'assume',unit:'h'}];
  note=(reusedPlatform?'Geteilte Plattform: reduzierte Use-Case-Konfiguration und kein zusätzliches Plattform-Hosting; illustrative Annahme. ':'')+`${dec(base)} Basis-Tage + ${integr} × ${dec(perInterface)} Schnittstellen-Tage + ${dec(prep)} Daten-Tage = ${dec(days)} Tage × ${euro(day)} = ${euro(setup)}. Betrieb: ${euro(host)} Hosting + ${dec(support)} h × ${euro(day/8)}/h = ${euroExact(opex)} / Monat.`;
  if(val('dayRate')===null)unknown.push('Tagessatz nicht eingegeben: 900 €/Tag als interne Schätzannahme verwendet');
  } }
  // Explicit, inspectable planning days for cross-team dependencies. User days are EXTRA on top.
- const autonomy=$('itAutonomy').value,approvals=$('externalApproval').value;
+ const autonomy=read('itAutonomy'),approvals=read('externalApproval');
  const autonomyDays=Object.hasOwn(IT_DEP_DAYS,autonomy)?IT_DEP_DAYS[autonomy]:0;
  const approvalDays=Object.hasOwn(APPROVAL_DEP_DAYS,approvals)?APPROVAL_DEP_DAYS[approvals]:0;
  const depDays=val('extraCoordDays'),depRate=val('extraCoordRate')??ASSUMPTIONS.dayRate,depMonthly=val('extraDependencyOpex');
@@ -1009,23 +1015,24 @@ function costCalc(){
  }
  if(depMonthly!==null){parts.push({label:'Zusätzlicher Abhängigkeitsbetrieb',value:depMonthly,source:'user',unit:'€/Monat'});note+=(note?' ':'')+`Abhängigkeits-Betrieb: ${euro(depMonthly)}/Monat zusätzlich.`;}
  if((autonomy||approvals)&&depDays===null)unknown.push('IT- und Freigabestufe mit illustrativen Standardtagen berechnet; zusätzliche individuelle Tage können ergänzt werden.');
- const ds=$('itDepSummary');if(ds){const en=window.appLanguage==='en',ma=en?{independent:'IT independent',partly:'Partly dependent',dependent:'Highly dependent'}:{independent:'IT eigenständig',partly:'Teilweise abhängig',dependent:'Stark abhängig'};ds.textContent=(ma[autonomy]||(en?'Autonomy not assessed':'Eigenständigkeit offen'))+(en?' · +':' · +')+dec(plannedDays)+(en?' setup days':' Abstimmungstage');}
- const di=$('itDepInterim');if(di){const en=window.appLanguage==='en';di.innerHTML=en?`<b>Dependency cost estimate:</b> ${dec(autonomyDays)} days (IT autonomy) + ${dec(approvalDays)} days (approvals) + ${dec(depDays??0)} extra days = ${dec(plannedDays)} days × ${euroExact(depRate)} = <b>${euroExact(depSetup)} one-off</b>. Ongoing: ${depMonthly===null?'not quantified':euroExact(depMonthly)+'/month'}. <span class="sourceTag src-assume">Illustrative standard, editable in Advanced</span>`:`<b>Abhängigkeitskosten:</b> ${dec(autonomyDays)} Tage (IT-Eigenständigkeit) + ${dec(approvalDays)} Tage (Freigaben) + ${dec(depDays??0)} weitere Tage = ${dec(plannedDays)} Tage × ${euroExact(depRate)} = <b>${euroExact(depSetup)} einmalig</b>. Laufend: ${depMonthly===null?'nicht beziffert':euroExact(depMonthly)+'/Monat'}. <span class="sourceTag src-assume">Unverifizierter Planungsstandard, anpassbar</span>`;}
- const shared=$('portfolioMode').value==='shared',contract=hasContract();
- $('contractTerms').hidden=!contract;$('dedicatedContractFee').hidden=shared;
+ const ds=snapshot?null:$('itDepSummary');if(ds){const en=window.appLanguage==='en',ma=en?{independent:'IT independent',partly:'Partly dependent',dependent:'Highly dependent'}:{independent:'IT eigenständig',partly:'Teilweise abhängig',dependent:'Stark abhängig'};ds.textContent=(ma[autonomy]||(en?'Autonomy not assessed':'Eigenständigkeit offen'))+(en?' · +':' · +')+dec(plannedDays)+(en?' setup days':' Abstimmungstage');}
+ const di=snapshot?null:$('itDepInterim');if(di){const en=window.appLanguage==='en';di.innerHTML=en?`<b>Dependency cost estimate:</b> ${dec(autonomyDays)} days (IT autonomy) + ${dec(approvalDays)} days (approvals) + ${dec(depDays??0)} extra days = ${dec(plannedDays)} days × ${euroExact(depRate)} = <b>${euroExact(depSetup)} one-off</b>. Ongoing: ${depMonthly===null?'not quantified':euroExact(depMonthly)+'/month'}. <span class="sourceTag src-assume">Illustrative standard, editable in Advanced</span>`:`<b>Abhängigkeitskosten:</b> ${dec(autonomyDays)} Tage (IT-Eigenständigkeit) + ${dec(approvalDays)} Tage (Freigaben) + ${dec(depDays??0)} weitere Tage = ${dec(plannedDays)} Tage × ${euroExact(depRate)} = <b>${euroExact(depSetup)} einmalig</b>. Laufend: ${depMonthly===null?'nicht beziffert':euroExact(depMonthly)+'/Monat'}. <span class="sourceTag src-assume">Unverifizierter Planungsstandard, anpassbar</span>`;}
+ const shared=read('portfolioMode')==='shared',contract=hasContract(snapshot);
+ if(!snapshot){$('contractTerms').hidden=!contract;$('dedicatedContractFee').hidden=shared;}
  const setupOverride=shared?val('caseSetupOverride'):null,opexOverride=shared?val('caseOpexOverride'):null;
  if(setupOverride!==null){setup=setupOverride;parts.push({label:'Eigene Einführung direkt eingegeben',value:setup,source:'user',unit:'€'});note+=' Eigene Einführung überschreibt die Schätzung einschließlich IT-Abhängigkeiten. '+euroExact(setup)+'.';}
  if(opexOverride!==null){opex=opexOverride;parts.push({label:'Eigener Monatsbetrieb direkt eingegeben',value:opex,source:'user',unit:'€/Monat'});note+=' Eigener Monatsbetrieb überschreibt die Schätzung einschließlich IT-Abhängigkeiten. '+euroExact(opex)+'/Monat.';}
  const contractFee=contract&&!shared?val('contractFee'):null;
  if(contract&&!shared&&contractFee!==null){if(opex!==null)opex+=contractFee;parts.push({label:'Vertragspauschale pro Monat',value:contractFee,source:'user',unit:'€/Monat'});note+=' Vertragspauschale pro Monat: '+euroExact(contractFee)+'.';}
  if(setupOverride!==null&&opexOverride!==null)unknown=[];
- $('assistedSetup').textContent=euro(setup);$('assistedOpex').textContent=opex===null?'—':euroExact(opex);$('advancedSetup').textContent=euro(setup);$('advancedOpex').textContent=opex===null?'—':euroExact(opex);
- let box=$('costBreakdown');if(box)box.innerHTML=`<b>Offener Rechenweg (Schätzwerte, keine Marktbenchmarks)</b><p>${esc(note||'Bitte Werte ergänzen.')}</p><p class="note">Farbcode: Nutzereingaben blau, interne Annahmen gelb, berechnete Ergebnisse lila. Die sichtbare Formel lässt sich auch auf einen Wert gedrückt halten.</p>`;
+ if(!snapshot){$('assistedSetup').textContent=euro(setup);$('assistedOpex').textContent=opex===null?'—':euroExact(opex);$('advancedSetup').textContent=euro(setup);$('advancedOpex').textContent=opex===null?'—':euroExact(opex);}
+ if(!snapshot){let box=$('costBreakdown');if(box)box.innerHTML=`<b>Offener Rechenweg (Schätzwerte, keine Marktbenchmarks)</b><p>${esc(note||'Bitte Werte ergänzen.')}</p><p class="note">Farbcode: Nutzereingaben blau, interne Annahmen gelb, berechnete Ergebnisse lila. Die sichtbare Formel lässt sich auch auf einen Wert gedrückt halten.</p>`;}
  return {setup,opex,note,unknown,parts,contractFee,setupOverride,opexOverride};}
 
-function portfolioState(){
- const enabled=$('portfolioMode').value==='shared',count=val('portfolioCount'),setup=val('portfolioSetup'),opex=val('portfolioOpex');
- const allocation=$('portfolioAllocation').value,custom=val('portfolioCustomShare');
+function portfolioState(snapshot=null){
+ const val=id=>N(engineRead(snapshot,id)),read=id=>engineRead(snapshot,id);
+ const enabled=read('portfolioMode')==='shared',count=val('portfolioCount'),setup=val('portfolioSetup'),opex=val('portfolioOpex');
+ const allocation=read('portfolioAllocation'),custom=val('portfolioCustomShare');
  const countOK=count!==null&&Number.isInteger(count)&&count>=2;
  const share=enabled?(allocation==='custom'?(custom===null?null:custom/100):(countOK?1/count:null)):0;
  const valid=!enabled||(countOK&&setup!==null&&setup>=0&&opex!==null&&opex>=0&&share!==null&&share>=0&&share<=1);
@@ -1033,72 +1040,75 @@ function portfolioState(){
  return {enabled,valid,count,share,allocation,setup,opex,allocatedSetup:enabled&&valid?setup*share:0,allocatedOpex:enabled&&valid?opex*share:0,otherBenefit,otherSetup,otherOpex,otherReady:enabled&&valid&&otherBenefit!==null&&otherSetup!==null&&otherOpex!==null};
 }
 
-function calc(){
- const errors=[],unc=[],st=staffCalc(),volume=val('volume'),horizon=ranges.horizon,realization=ranges.realization,costs=costCalc();
- const portfolio=portfolioState();
- if(hasContract()&&portfolio.enabled){const incl=$('contractIncludedInPlatform').value;
+function calc(snapshot=null){
+ const active=snapshot||{staff,steps,ranges,timeMode,comparisonMode};
+ const {staff:activeStaff,steps:activeSteps,ranges:activeRanges,timeMode:activeTimeMode,comparisonMode:activeComparison}=active;
+ const val=id=>N(engineRead(snapshot,id)), read=id=>engineRead(snapshot,id);
+ const errors=[],unc=[],st=staffCalc(snapshot),volume=val('volume'),horizon=activeRanges.horizon,realization=activeRanges.realization,costs=costCalc(snapshot);
+ const portfolio=portfolioState(snapshot);
+ if(hasContract(snapshot)&&portfolio.enabled){const incl=read('contractIncludedInPlatform');
    if(!['yes','no'].includes(incl))errors.push('Pauschalvertrag: Ist die Gebühr im Plattformbetrieb enthalten?');
    if(incl==='no'&&costs.contractFee===null)errors.push('Zusätzliche monatliche Pauschalvertragsgebühr fehlt (0 ausdrücklich möglich)');
  }
- if(hasContract()&&!portfolio.enabled&&costs.contractFee===null)errors.push('Monatliche Vertragspauschale fehlt (0 ausdrücklich möglich)');
+ if(hasContract(snapshot)&&!portfolio.enabled&&costs.contractFee===null)errors.push('Monatliche Vertragspauschale fehlt (0 ausdrücklich möglich)');
  if([costs.contractFee,costs.setupOverride,costs.opexOverride].some(x=>x!==null&&x<0))errors.push('Vertrags- und Zusatzkosten müssen mindestens 0 € sein');
  if(portfolio.enabled&&!portfolio.valid)errors.push('Geteilte Plattform: Anzahl Use Cases, Plattform-Setup, Monatsbetrieb und ggf. eigener Kostenanteil vollständig eingeben (0 ausdrücklich möglich)');
  if(portfolio.enabled&&portfolio.valid&&!portfolio.otherReady)unc.push('Portfolio-ROI noch nicht geschätzt: Durchschnittsnutzen sowie Zusatzkosten der übrigen Use Cases fehlen.');
  if(val('currentTechMonthly')===null||val('currentTechMonthly')<0)errors.push('Aktuelle Technologiekosten pro Monat (0 € ausdrücklich möglich)');
- if(!$('caseName').value.trim())errors.push('Use-Case-Name');
+ if(!read('caseName').trim())errors.push('Use-Case-Name');
  if(volume===null||volume<=0)errors.push('Vorgänge pro Monat');
  if(horizon===null)errors.push('Betrachtungszeitraum');
- if(st.valid===0||st.hr===null)errors.push(timeMode==='steps'?'Mindestens eine Mitarbeiterzeile mit Vergütung':'Mindestens eine vollständige Mitarbeiterzeile mit Vergütung und Einsatz/Woche');
+ if(st.valid===0||st.hr===null)errors.push(activeTimeMode==='steps'?'Mindestens eine Mitarbeiterzeile mit Vergütung':'Mindestens eine vollständige Mitarbeiterzeile mit Vergütung und Einsatz/Woche');
  if(st.invalid>0)unc.push(st.invalid+' weitere Mitarbeiterzeilen unvollständig (nicht eingerechnet)');
  if(realization===null)errors.push('Finanziell realisierbarer Anteil der Arbeitszeit');
  if(costs.setup===null||costs.opex===null)errors.push('Implementierungs- und Betriebskosten');
  if(costs.unknown.length)unc.push(...costs.unknown);
- if(!steps.length)errors.push('Mindestens ein Prozessschritt');
- if(steps.some(t=>aiStep(t)&&!contractModel(t))&&val('fx')===null)unc.push('API-Umrechnung nutzt Referenz 0,89494 € je USD; bitte bei Bedarf aktualisieren');
- const manualMonthlyMinutes=timeMode==='staff'&&st.valid>0&&volume>0?st.weekly*52/12*60/volume:null;
- const weights=stepWeights();
- if(timeMode==='staff'&&steps.length>1){
-  if(steps.some(t=>t.effortShare===null))unc.push('Zeitverteilung: freie Schrittanteile sind gleichmäßig aufgeteilt (Planungsstandard)');
-  const specified=steps.reduce((x,t)=>x+(t.effortShare??0),0);
-  if(steps.every(t=>t.effortShare!==null)&&Math.abs(specified-100)>.01)unc.push('Zeitanteile summieren sich auf '+dec(specified)+' %: zur Kalkulation auf 100 % normalisiert');
+ if(!activeSteps.length)errors.push('Mindestens ein Prozessschritt');
+ if(activeSteps.some(t=>aiStep(t)&&!contractModel(t))&&val('fx')===null)unc.push('API-Umrechnung nutzt Referenz 0,89494 € je USD; bitte bei Bedarf aktualisieren');
+ const manualMonthlyMinutes=activeTimeMode==='staff'&&st.valid>0&&volume>0?st.weekly*52/12*60/volume:null;
+ const weights=stepWeights(snapshot);
+ if(activeTimeMode==='staff'&&activeSteps.length>1){
+  if(activeSteps.some(t=>t.effortShare===null))unc.push('Zeitverteilung: freie Schrittanteile sind gleichmäßig aufgeteilt (Planungsstandard)');
+  const specified=activeSteps.reduce((x,t)=>x+(t.effortShare??0),0);
+  if(activeSteps.every(t=>t.effortShare!==null)&&Math.abs(specified-100)>.01)unc.push('Zeitanteile summieren sich auf '+dec(specified)+' %: zur Kalkulation auf 100 % normalisiert');
   if(specified>100)unc.push('Mehr als 100 % fest vergeben: Angaben werden proportional normalisiert');
  }
  let before=0,rules=0,after=0,hasAI=false,requestPerProcess=0,aiStepsPerProcess=0,modelCallsPerProcess=0,modelCallsKnown=true,monthHumanBefore=0,monthHumanAfter=0,monthHumanRules=0;
  let allBefore=true,allRules=true,allAfter=true;
  const breakdown=[];
- steps.forEach((t,i)=>{
-  const name=t.name.trim()||'Schritt '+(i+1),h=roleHourly(t),weight=weights[i]??0,role=staff.find(e=>String(e.id)===String(t.role));
+ activeSteps.forEach((t,i)=>{
+  const name=t.name.trim()||'Schritt '+(i+1),h=roleHourly(t,snapshot),weight=weights[i]??0,role=activeStaff.find(e=>String(e.id)===String(t.role));
   if(!t.name.trim())errors.push(name+': Bezeichnung');
   if(!t.mode)errors.push(name+': künftige Vorgehensweise');
-  if(timeMode==='steps'&&t.before===null)errors.push(name+': aktuelle Bearbeitungsminuten');
+  if(activeTimeMode==='steps'&&t.before===null)errors.push(name+': aktuelle Bearbeitungsminuten');
   if(!role)errors.push(name+': Mitarbeiterrolle fehlt');
   if(role&&h===null)errors.push(name+': Vollkosten der zugeordneten Rolle fehlen');
   
   const bq=qualityEstimate(t.errorRate,t.rework),aq=qualityEstimate(t.aiError,t.aiRework);
   // Employee-total source includes existing rework, so no second addition today.
-  const roleMonthlyMinutes=role&&volume>0&&hoursOf(role)!==null?hoursOf(role)*52/12*60/volume:null;const b=timeMode==='staff'?(roleMonthlyMinutes===null?null:roleMonthlyMinutes*weight):(t.before===null?null:t.before+bq.value);
-  if(timeMode==='steps'&&bq.assumed)unc.push(name+': Qualitäts-Standard heute: '+bq.rate+' % × '+bq.minutes+' min');
+  const roleMonthlyMinutes=role&&volume>0&&hoursOf(role,snapshot)!==null?hoursOf(role,snapshot)*52/12*60/volume:null;const b=activeTimeMode==='staff'?(roleMonthlyMinutes===null?null:roleMonthlyMinutes*weight):(t.before===null?null:t.before+bq.value);
+  if(activeTimeMode==='steps'&&bq.assumed)unc.push(name+': Qualitäts-Standard heute: '+bq.rate+' % × '+bq.minutes+' min');
   let r=null;
-  if(timeMode==='staff'){
+  if(activeTimeMode==='staff'){
    if(t.rulesSavedPct!==null)r=b===null?null:b*(1-t.rulesSavedPct/100);
-   else if(t.mode==='rules'||comparisonMode==='rules')errors.push(name+': fehlende Zeitersparnis der selbst definierten Regel-Alternative (%)');
+   else if(t.mode==='rules'||activeComparison==='rules')errors.push(name+': fehlende Zeitersparnis der selbst definierten Regel-Alternative (%)');
   } else {
    if(t.rules!==null)r=t.rules+bq.value;
-   else if(t.mode==='rules'||comparisonMode==='rules')errors.push(name+': fehlende menschliche Restzeit der Regel-Alternative (min)');
+   else if(t.mode==='rules'||activeComparison==='rules')errors.push(name+': fehlende menschliche Restzeit der Regel-Alternative (min)');
   }
   let f=t.mode==='manual'?b:t.mode==='rules'?r:b,model=modelById(t.model),oneRequest=null,share=null;
   if(t.mode==='assist'||t.mode==='auto'){
    hasAI=true;
    if(t.share===null)errors.push(name+': KI-Nutzungsanteil');
-   if(timeMode==='staff'?t.savedPct===null:t.future===null)errors.push(name+': '+(timeMode==='staff'?'KI-Zeitersparnis (%)':'menschliche Restzeit (min)'));
+   if(activeTimeMode==='staff'?t.savedPct===null:t.future===null)errors.push(name+': '+(activeTimeMode==='staff'?'KI-Zeitersparnis (%)':'menschliche Restzeit (min)'));
    if(!model&&!contractModel(t))errors.push(name+': Modell wählen');
    if(aq.assumed)unc.push(name+': KI-Nacharbeits-Standard: '+aq.rate+' % × '+aq.minutes+' min');
    share=t.share===null?null:t.share/100;
    if(share!==null&&b!==null){
-    if(timeMode==='staff')f=t.savedPct===null?null:(1-share)*b+share*(b*(1-t.savedPct/100)+aq.value);
+    if(activeTimeMode==='staff')f=t.savedPct===null?null:(1-share)*b+share*(b*(1-t.savedPct/100)+aq.value);
     else f=t.future===null?null:(1-share)*b+share*(t.future+aq.value);
    }else f=null;
-   if(share!==null){aiStepsPerProcess+=share;if(contractModel(t)&&share>0)modelCallsKnown=false;else if(!contractModel(t))modelCallsPerProcess+=share*(t.calls??ASSUMPTIONS.calls);}if(model&&share!==null){oneRequest=priceModel(model,t);requestPerProcess+=share*oneRequest;}
+   if(share!==null){aiStepsPerProcess+=share;if(contractModel(t)&&share>0)modelCallsKnown=false;else if(!contractModel(t))modelCallsPerProcess+=share*(t.calls??ASSUMPTIONS.calls);}if(model&&share!==null){oneRequest=priceModel(model,t,snapshot);requestPerProcess+=share*oneRequest;}
    if(t.criticality==='high'&&t.review!=='always')unc.push(name+': Freigaberegel bei hoher Kritikalität prüfen');
    if(!t.review)unc.push(name+': Review/Freigabe noch nicht spezifiziert');
    if(contractModel(t))unc.push(name+': Vertragsmodell: Modellaufrufe nicht bekannt; keine Tokenabrechnung für diesen Schritt.');
@@ -1132,17 +1142,17 @@ function calc(){
   breakdown.push({id:t.id,name,base:b,rules:r,future:f,rate:h,share,oneRequest,monthlyRequest:oneRequest===null||volume===null?null:oneRequest*volume*(share??0),qualityBefore:bq.value,qualityAI:aq.value,model:contractModel(t)?(window.appLanguage==='en'?'Provider-assigned model / flat contract':'Modell vorgegeben / Vertragspauschale'):(model?.name??null),contract:contractModel(t)&&aiStep(t),tokens:model?SIZES[t.scope]||SIZES.medium:null,weight,qualityAssumedBefore:bq.assumed,qualityAssumedAI:aq.assumed,depAdded,depEstimated,depAssumed,depAssumedRate,depAssumedMinutes,depLevel:t.depLevel,depRate:t.depRate,depMinutes:t.depMinutes});
  });
  if(val('remainingTechMonthly')===null)unc.push('Bisherige Tools laufen vorläufig weiter (Standard: heutige Technologiekosten). Eine tatsächliche Ablösung ausdrücklich unter Optional erfassen.');
- if(comparisonMode==='rules'){if(!$('rulesName').value.trim())errors.push('Name der regelbasierten Alternative');if(val('rulesSetup')===null)errors.push('Einführungskosten der Regel-Alternative, ggf. explizit 0 €');if(val('rulesOpex')===null)errors.push('Betriebskosten der Regel-Alternative pro Monat, ggf. explizit 0 €');}
- if(val('cashExtra')!==null&&!$('includeExtra').checked)unc.push('Weitere Vorteile nicht als überschneidungsfrei bestätigt und deshalb ausgeschlossen');
- const laborRatesKnown=steps.every(t=>roleHourly(t)!==null);
- const result={errors,unc,vol:volume,hr:st.hr,horizon,realization,costs,timeMode,hasAI,before:allBefore?before:null,rules:allRules?rules:null,after:allAfter?after:null,requestPerProcess,aiStepsPerProcess,modelCallsPerProcess:modelCallsKnown?modelCallsPerProcess:null,breakdown,capacity:st.weekly,weeklyBudget:st.totalWeekly,portfolio,monthHumanBefore:allBefore&&laborRatesKnown&&volume!==null?monthHumanBefore:null,monthHumanAfter:allAfter&&laborRatesKnown&&volume!==null?monthHumanAfter:null,monthHumanRules:allRules&&laborRatesKnown&&volume!==null?monthHumanRules:null};
+ if(activeComparison==='rules'){if(!read('rulesName').trim())errors.push('Name der regelbasierten Alternative');if(val('rulesSetup')===null)errors.push('Einführungskosten der Regel-Alternative, ggf. explizit 0 €');if(val('rulesOpex')===null)errors.push('Betriebskosten der Regel-Alternative pro Monat, ggf. explizit 0 €');}
+ if(val('cashExtra')!==null&&!read('includeExtra'))unc.push('Weitere Vorteile nicht als überschneidungsfrei bestätigt und deshalb ausgeschlossen');
+ const laborRatesKnown=activeSteps.every(t=>roleHourly(t,snapshot)!==null);
+ const result={errors,unc,vol:volume,hr:st.hr,horizon,realization,costs,timeMode:activeTimeMode,hasAI,before:allBefore?before:null,rules:allRules?rules:null,after:allAfter?after:null,requestPerProcess,aiStepsPerProcess,modelCallsPerProcess:modelCallsKnown?modelCallsPerProcess:null,breakdown,capacity:st.weekly,weeklyBudget:st.totalWeekly,portfolio,monthHumanBefore:allBefore&&laborRatesKnown&&volume!==null?monthHumanBefore:null,monthHumanAfter:allAfter&&laborRatesKnown&&volume!==null?monthHumanAfter:null,monthHumanRules:allRules&&laborRatesKnown&&volume!==null?monthHumanRules:null};
  if(errors.length)return result;
  const factor=volume*horizon/60,real=realization/100;
  const hrBefore=before*factor,hrRules=rules*factor,hrAfter=after*factor,freed=hrBefore-hrAfter,deltaHours=hrRules-hrAfter;
  const monthlyLaborBase=monthHumanBefore,monthlyLaborRules=monthHumanRules,monthlyLaborAfter=monthHumanAfter;
  const monthlyRulesBenefit=allRules?monthlyLaborBase-monthlyLaborRules:null,monthlyAIValue=allRules?monthlyLaborRules-monthlyLaborAfter:null;
  const aiBenefit=monthlyAIValue===null?null:monthlyAIValue*real*horizon,ruleBenefit=monthlyRulesBenefit===null?null:monthlyRulesBenefit*real*horizon,laborBase=monthlyLaborBase*horizon;
- const inference=requestPerProcess*volume*horizon,extra=$('includeExtra').checked?(val('cashExtra')??0)*horizon:0;
+ const inference=requestPerProcess*volume*horizon,extra=read('includeExtra')?(val('cashExtra')??0)*horizon:0;
  const incrementCost=costs.setup+costs.opex*horizon+inference+portfolio.allocatedSetup+portfolio.allocatedOpex*horizon,incrementValue=aiBenefit===null?null:aiBenefit+extra,incrementNet=incrementValue===null?null:incrementValue-incrementCost,roi=hasAI&&incrementCost>0&&incrementNet!==null?100*incrementNet/incrementCost:null;
  const rulesSetup=val('rulesSetup'),rulesOpex=val('rulesOpex');
  const rulesTotal=(rulesSetup??0)+(rulesOpex??0)*horizon;
@@ -1173,7 +1183,7 @@ function calc(){
  const cashAI=laborBase-currentLaborBenefit+incrementCost-extra-monthlyToolSaving*horizon;
  const monthAiRealized=monthHumanBenefitRules,monthAiNet=rulesMonthNet;
  const payback=rulesPayback;
- const weeklyProcessUsed=timeMode==='staff'?st.weekly:volume*before/60*12/52;
+ const weeklyProcessUsed=activeTimeMode==='staff'?st.weekly:volume*before/60*12/52;
  const capacityUtil=st.weekly>0?weeklyProcessUsed/st.weekly:null;
  // Portfolio: full-platform costs counted ONCE; other use cases included only after explicit average-case estimates.
  let portfolioEstimate=null;
@@ -3108,6 +3118,7 @@ function buildQuick(){
   return `<details class="guideRoleGroup" data-roleid="${p.id}" open><summary><b>👤 ${clean(p.name||tr('Neue Mitarbeiterrolle','New employee role'))}</b><small>${ownSteps.length} ${tr('Tasks','tasks')}</small></summary><div class="guideRoleBody">
   <div class="guideQuickGrid">${quickField('role:'+p.id+':name',tr('Rollenbezeichnung','Role name'),p.name,'text')}${quickField('role:'+p.id+':salary',tr('Vergütungsart','Compensation type'),p.salaryType,'select',salaryOpts)}</div>
   ${quickField('role:'+p.id+':rate',tr('Vergütung (€)','Compensation (€)'),p.rate,'number',null,'step="0.01"')}
+  ${timeMode==='staff'?quickField('role:'+p.id+':amount',p.salaryType==='hour'?tr('Einsatz (h/Woche)','Allocation (h/week)'):tr('Einsatz (FTE)','Allocation (FTE)'),p.amount,'number',null,'step="0.01"'):''}
   <div class="guideRoleKpis" data-role-kpi="${p.id}">${tr('Personalkosten vor/nach KI pro Monat','Monthly labor costs before/after AI')}: <b>${beforeCost===null?'—':euroExact(beforeCost)} → ${euroExact(afterCost)}</b></div>
   <div class="guideQuickSteps">${tasks}</div>
   <div class="guideQuickActions"><button type="button" class="quickAdd" data-quick-action="addTask" data-roleid="${p.id}">＋ ${tr('Task hinzufügen','Add task')}</button><button type="button" class="quickRemove" data-quick-action="removeRole" data-roleid="${p.id}" ${staff.length<=1?'disabled':''}>× ${tr('Rolle entfernen','Remove role')}</button></div></div></details>`;
@@ -3161,7 +3172,7 @@ function tweak(field,value){const v=num(value);
  else if(field==='horizon'){ranges.horizon=v;renderGlobals();}
  else if(field==='realization'){ranges.realization=v;renderGlobals();}
  else if(field.startsWith('role:')){const [,id,key]=field.split(':'),p=staff.find(a=>a.id===+id);if(!p)return;
-  if(key==='name')p.name=value;else if(key==='salary'){p.salaryType=value;p.rate=null;}else if(key==='rate')p.rate=v;}
+  if(key==='name')p.name=value;else if(key==='salary'){p.salaryType=value;p.rate=null;}else if(key==='rate')p.rate=v;else if(key==='amount')p.amount=v;}
  else if(field.startsWith('step:')){const [,id,key]=field.split(':'),t=steps.find(a=>a.id===+id);if(!t)return;
   if(key==='name')t.name=value;
   else if(key==='mode'){t.mode=value;if(!['assist','auto'].includes(value)){t.share=null;t.future=null;t.model='';}if(value!=='rules')t.rules=null;}
@@ -3446,20 +3457,21 @@ body.guideWizard .guideCostMath{display:none!important}
  if(comparison)comparison.insertAdjacentElement('afterend',lean);
  // Cost provenance belongs in the results panel only, not the input/wizard.
  function attachBreakdown(){layersNode=layersNode||$('guideCostLayers');const root=$('guideCostBreakdownBody');if(root&&layersNode&&layersNode.parentElement!==root)root.appendChild(layersNode);}
- function ruleModel(r){
+ function ruleModel(r,snapshot=null){
+   const read=id=>engineRead(snapshot,id);
    // A transparent first-pass rules scenario is intentionally shown even when the
    // guided assessment did not ask for separate rules costs or task times.
    // Unlike the AI scenario, every non-user rule value here is an illustrative
    // planning assumption and must be validated before investment decisions.
-   const inputName=$('rulesName')?.value?.trim()||'';
+   const inputName=read('rulesName')?.trim()||'';
    const name=inputName||say('Beispiel: regelbasierte Automatisierung','Illustrative rules-based automation');
-   const dayRateRaw=$('dayRate')?.value;
+   const dayRateRaw=read('dayRate');
    const dayRate=dayRateRaw!==''&&dayRateRaw!=null&&isNum(Number(dayRateRaw))&&Number(dayRateRaw)>0?Number(dayRateRaw):900;
-   const integrRaw=$('integrations')?.value;
+   const integrRaw=read('integrations');
    const integrations=integrRaw!==''&&integrRaw!=null&&isNum(Number(integrRaw))&&Number(integrRaw)>=0?Number(integrRaw):1;
    const defaultDays=2+integrations;
-   const setupRaw=$('rulesSetup')?.value??'';
-   const opexRaw=$('rulesOpex')?.value??'';
+   const setupRaw=read('rulesSetup')??'';
+   const opexRaw=read('rulesOpex')??'';
    const setupAssumed=setupRaw==='';
    const opexAssumed=opexRaw==='';
    const setup=setupAssumed?defaultDays*dayRate:Number(setupRaw);
@@ -3467,7 +3479,7 @@ body.guideWizard .guideCostMath{display:none!important}
    const targets=[];let human=0,assumedTasks=0,affectedTasks=0;
    const breakdown=[];
    for(const b of r.breakdown||[]){
-    const step=typeof steps==='undefined'?null:steps.find(t=>t.id===b.id);
+    const step=(snapshot?snapshot.steps:steps).find(t=>t.id===b.id);
     if(!isNum(b.base)||!isNum(b.rate)||!isNum(r.vol))return {ready:false,human:null,setup,opex,assumed:true,reasons:['baseline']};
     const eligible=step&&['auto','assist','rules'].includes(step.mode);
     const explicit=step&&isNum(step.rules)&&step.rules>=0;
@@ -3564,6 +3576,8 @@ body.guideWizard .guideCostMath{display:none!important}
  document.addEventListener('click',e=>{if(e.target.closest('[data-demo-confirm]')||e.target.id==='guideNew')view='ai';},true);
  const langEvents=['guideDE','guideEN'];langEvents.forEach(id=>$(id)?.addEventListener('click',()=>{if(originalCompare)originalCompare.textContent=say('Regeln vs. heute','Rules vs. today');render();}));
  window.guideRenderLean=render;
+ window.roiSensitivityRuleModel=ruleModel;
+ window.roiSensitivityView=()=>view;
  setTimeout(()=>{if(originalCompare)originalCompare.textContent=say('Regeln vs. heute','Rules vs. today');render();},0);
 })();
 </script>
@@ -3614,6 +3628,7 @@ const refresh=()=>requestAnimationFrame(calcMix);const observer=new MutationObse
 refresh();
 })();
 </script>
+<script src="roi-sensitivity.js"></script>
 <!-- Portfolio introduction: presentation only; no change to business logic. -->
 <link rel="stylesheet" href="../../assets/css/tool-intro.css">
 <script src="../../data/projects.js"></script>
