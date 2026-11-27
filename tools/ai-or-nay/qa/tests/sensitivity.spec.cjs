@@ -67,6 +67,7 @@ test('floating sensitivity replaces Tool-Info only in results and stays fixed wh
  const button=page.locator('#roiSensitivityOpen'),intro=page.locator('.tool-intro-reopen'),dialog=page.locator('#roiSensitivityDialog');
  await expect(button).toBeHidden();await expect(intro).toBeVisible();
  await page.locator('#guideDemo').click();await page.locator('#demoCasePicker [data-demo-case="it"]').click();
+ await page.locator('[data-demo-confirm]').click();
  await expect(button).toBeVisible();await expect(intro).toBeHidden();
  for(const viewport of [{width:1440,height:900},{width:390,height:844}]){
   await page.setViewportSize(viewport);
@@ -80,6 +81,7 @@ test('floating sensitivity replaces Tool-Info only in results and stays fixed wh
 });
 test('DE/EN modal story, scenario selection, direct navigation, live updates and mobile',async({page},info)=>{
  await page.locator('#guideDemo').click();await page.locator('#demoCasePicker [data-demo-case="it"]').click();
+ await page.locator('[data-demo-confirm]').click();
  await expect(page.locator('body')).toHaveClass(/guideResults/);
  const open=page.locator('#roiSensitivityOpen'),dialog=page.locator('#roiSensitivityDialog');
  await expect(open).toBeVisible();await expect(dialog).toBeHidden();

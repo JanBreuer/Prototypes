@@ -4,7 +4,7 @@ const fs = require('node:fs/promises');
 const path = require('node:path');
 const [baseDir, headDir, output] = process.argv.slice(2).map(p=>path.resolve(p));
 const urlPath='/tools/ai-or-nay/';
-const scenarios=[['desktop-wizard',1440,900,false],['desktop-results',1440,900,true],['mobile-wizard',390,844,false],['mobile-results',390,844,true]];
+const scenarios=[['desktop-wizard',1440,900,false],['desktop-results',1440,900,true],['mobile-wizard',390,844,false],['mobile-results',390,844,true],['desktop-demo-preview',1440,900,'preview'],['mobile-demo-preview',390,844,'preview']];
 async function server(dir,port){
  const p=spawn('python3',['-m','http.server',String(port),'--bind','127.0.0.1'],{cwd:dir,stdio:'ignore'});
  try { for(let i=0;i<100;i++){try{if((await fetch('http://127.0.0.1:'+port+urlPath)).ok)return p;}catch{} await new Promise(r=>setTimeout(r,100));}throw Error('Server unavailable: '+dir); }catch(e){p.kill();throw e;}
@@ -17,7 +17,7 @@ async function capture(browser,port,w,h,results,sensitivity=false){
   await page.goto('http://127.0.0.1:'+port+urlPath);
   await page.locator('#guideTop').waitFor({state:'visible'});
   await page.locator('#guideDE').click();
-  if(results){await page.locator('#guideDemo').click();if(await page.locator('#demoCasePicker').isVisible())await page.locator('#demoCasePicker [data-demo-case="it"]').click();await page.locator('body.guideResults').waitFor();await page.waitForFunction(()=>window.latest?.results?.errors?.length===0);}
+  if(results){await page.locator('#guideDemo').click();if(await page.locator('#demoCasePicker').isVisible())await page.locator('#demoCasePicker [data-demo-case="it"]').click();const preview=await page.locator('[data-demo-confirm]').isVisible();if(preview&&results===true)await page.locator('[data-demo-confirm]').click();if(!preview||results===true){await page.locator('body.guideResults').waitFor();await page.waitForFunction(()=>window.latest?.results?.errors?.length===0);}}
   else await page.locator('#guidedRoot').waitFor({state:'visible'});
   await page.evaluate(async()=>{await document.fonts.ready;window.scrollTo(0,0);if(document.activeElement instanceof HTMLElement)document.activeElement.blur();});
   if(sensitivity){
