@@ -77,7 +77,12 @@ test('floating sensitivity replaces Tool-Info only in results and stays fixed wh
   const after=await button.boundingBox();expect(Math.abs(after.x-before.x)).toBeLessThanOrEqual(1);expect(Math.abs(after.y-before.y)).toBeLessThanOrEqual(1);
   await button.click();await expect(dialog).toBeVisible();await dialog.locator('.ssClose').click();await expect(dialog).toBeHidden();
  }
- await page.locator('#guideNew').click();await expect(button).toBeHidden();await expect(intro).toBeVisible();
+ // A cancelled reset must keep the results and floating action intact.
+ page.once('dialog',d=>d.dismiss());
+ await page.locator('#guideNew').click();await expect(page.locator('body')).toHaveClass(/guideResults/);await expect(button).toBeVisible();
+ // Explicitly confirm the reset before asserting the wizard visibility.
+ page.once('dialog',d=>d.accept());
+ await page.locator('#guideNew').click();await expect(page.locator('body')).toHaveClass(/guideWizard/);await expect(button).toBeHidden();await expect(intro).toBeVisible();
 });
 test('DE/EN modal story, scenario selection, direct navigation, live updates and mobile',async({page},info)=>{
  await page.locator('#guideDemo').click();await page.locator('#demoCasePicker [data-demo-case="it"]').click();
