@@ -5,6 +5,7 @@
  const numeric=x=>x!==null&&x!==undefined&&String(x).trim()!==''&&Number.isFinite(Number(x))?Number(x):null;
  const tr=(de,en)=>window.appLanguage==='en'?en:de;
  const locale=()=>tr('de-DE','en-GB');
+ const unitLabel=u=>({ '€/mo':tr('€/Monat','€/month'),'€/yr':tr('€/Jahr','€/year'),'€/d':tr('€/Tag','€/day'),'h/wk':tr('h/Woche','h/week') }[u]||u);
  const fmt=(n,maximumFractionDigits=2)=>finite(n)?n.toLocaleString(locale(),{maximumFractionDigits}):'—';
  const signed=(n,d=2)=>finite(n)?(n>0?'+':'')+fmt(n,d):'—';
  const money=n=>finite(n)?(n>0?'+':'')+n.toLocaleString(locale(),{style:'currency',currency:'EUR',maximumFractionDigits:0}):'—';
@@ -163,24 +164,25 @@
   const view=window.roiSensitivityView?.()==='rules'?'rules':'ai';
   const data=analyze(serialize(),view);
   content.replaceChildren();
-  content.append(node('p',tr('Isolierte Szenarien gegenüber heute: jeweils nur eine Eingabe wird verändert. Alle abhängigen Ergebnisse werden neu berechnet. Keine Änderung der Kundendaten. Leere und Nullwerte sind nicht relativ variierbar.','Isolated scenarios versus today: change only one input and recalculate all dependent results. Customer data stays unchanged. Blank and zero values cannot be varied relatively.')));
+  content.append(node('p',tr('Isolierte Szenarien gegenüber heute: jeweils nur eine Eingabe wird verändert. Alle abhängigen Ergebnisse werden neu berechnet. Keine Änderung der Kundendaten. Leere Werte und relative Nullwert-Variationen werden nicht getestet.','Isolated scenarios versus today: change only one input and recalculate all dependent results. Customer data stays unchanged. Blank values and relative variations of zero are not tested.')));
   if(!data.baseline){content.append(node('p',tr('Für dieses Szenario fehlen noch erforderliche Angaben oder ein KI-Schritt.','This scenario needs complete inputs or an AI step.')));return;}
   content.append(node('p',tr('Basis: ','Baseline: ')+(view==='rules'?tr('Regeln vs. heute','Rules vs. today'):tr('KI vs. heute','AI vs. today'))+' · ROI '+fmt(data.baseline.roi)+' % · '+tr('Nettonutzen ','Net value ')+money(data.baseline.net)+' · '+tr('Amortisation ','Payback ')+(finite(data.baseline.payback)?fmt(data.baseline.payback)+' '+tr('Mon.','mo') :tr('nicht erreicht','not reached'))));
   const label=node('label',tr('Rangfolge nach größter absoluter Abweichung','Rank by largest absolute deviation'));label.htmlFor='roiSensitivitySort';content.append(label);
   const select=node('select');select.id='roiSensitivitySort';
-  for(const [key,name] of [['roi',tr('ROI (Prozentpunkte)','ROI (percentage points)')],['net',tr('Nettonutzen (€)','Net value (€)')],['payback',tr('Amortisationsdauer (Monate)','Payback period (months)')]]){const o=node('option',name);o.value=key;select.append(o);}
+  if(sort==='roi'&&!finite(data.baseline.roi))sort='net';
+  for(const [key,name] of [['roi',tr('ROI (Prozentpunkte)','ROI (percentage points)')],['net',tr('Nettonutzen (€)','Net value (€)')],['payback',tr('Amortisationsdauer (Monate)','Payback period (months)')]]){const o=node('option',name);o.value=key;if(key==='roi'&&!finite(data.baseline.roi))o.disabled=true;select.append(o);}
   select.value=sort;select.onchange=()=>{sort=select.value;render();};content.append(select);
   const rows=data.rows.slice().sort((a,b)=>{const x=score(a,sort,data.baseline),y=score(b,sort,data.baseline);return x===y?a.id.localeCompare(b.id):y>x?1:-1;});
   if(!rows.length){content.append(node('p',tr('Keine wirksamen relativen Änderungen der angegebenen Parameter.','No effective relative changes to the supplied parameters.')));return;}
   for(const [i,row] of rows.slice(0,all?rows.length:5).entries()){
    const wrap=node('div',undefined,'sensitivityRow'),head=node('div',undefined,'sensitivityHead');
-   const title=node('button',(i+1)+'. '+tr(row.de,row.en)+' ↗');title.type='button';title.title=tr('Zur Eingabe springen','Go to input');title.onclick=()=>{if(!goto(row))title.title=tr('Eingabefeld ist in diesem Modus nicht verfügbar','Input is unavailable in this mode');};
-   head.append(title,node('small',fmt(row.value)+' '+row.unit));wrap.append(head);
+   const title=node('button',(i+1)+'. '+tr(row.de,row.en)+' ↗');title.type='button';title.dataset.sensitivityId=row.id;title.title=tr('Zur Eingabe springen','Go to input');title.onclick=()=>{if(!goto(row))title.title=tr('Eingabefeld ist in diesem Modus nicht verfügbar','Input is unavailable in this mode');};
+   head.append(title,node('small',fmt(row.value)+' '+unitLabel(row.unit)));wrap.append(head);
    const values=node('div',undefined,'sensitivityValues');
    for(const s of row.scenarios){
     const block=node('div',undefined,'sensitivityValue');
     const actual=Math.abs(s.actualPercent-s.percent)>1e-7?' ('+signed(s.actualPercent,1)+' % '+tr('effektiv','actual')+')':'';
-    block.append(node('b',signed(s.percent,0)+' % → '+fmt(s.value)+' '+row.unit+actual));
+    block.append(node('b',signed(s.percent,0)+' % → '+fmt(s.value)+' '+unitLabel(row.unit)+actual));
     if(!s.result)block.append(node('span',tr('Ungültiges Szenario','Invalid scenario')));
     else{
      block.append(node('span','ROI: '+(finite(s.roi)?signed(s.roi)+' '+tr('PP','pp'):'—')));
