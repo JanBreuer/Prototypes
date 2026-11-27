@@ -71,6 +71,7 @@ jobs:
       github.event_name == 'pull_request' &&
       github.event.pull_request.head.repo.full_name == github.repository &&
       (github.head_ref == 'feature/demo-use-cases' ||
+      github.head_ref == 'feature/operator-guidance' ||
       startsWith(github.head_ref, 'feature/ai-or-nay-') ||
       startsWith(github.head_ref, 'fix/ai-or-nay-') ||
       (github.head_ref == 'develop' && github.base_ref == 'main')) }}
