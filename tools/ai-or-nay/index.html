@@ -523,6 +523,21 @@ body.guideResults .resultsPanel{margin-bottom:100px!important}
 
 
 @media(max-width:840px){#guideTop{flex-wrap:wrap}.guideActions{width:100%;justify-content:flex-end}.guideActions button{padding:7px 9px;font-size:11px}}
+
+/* Demo library: scoped to the native modal; no shared design changes. */
+#demoCasePicker{width:min(850px,calc(100% - 24px));max-height:85dvh;overflow:auto;box-sizing:border-box;border:1px solid #e4dce7;border-radius:16px;background:white;color:#31253a;padding:20px;box-shadow:0 12px 50px #31253a33}
+#demoCasePicker::backdrop{background:#31253a66}
+#demoCasePicker .demoPickerHeader{display:flex;align-items:center;justify-content:space-between;gap:12px}
+#demoCasePicker h2{margin:0;font-size:20px}#demoCasePicker h3{font-size:14px;margin:18px 0 8px}
+#demoCasePicker .demoPickerNote{font-size:12px;color:#715f78;line-height:1.5}
+#demoCasePicker .demoPickerGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+#demoCasePicker button{border:1px solid #e4dce7;background:white;color:#31253a;border-radius:10px;box-shadow:none;cursor:pointer}
+#demoCasePicker [data-demo-case]{display:flex;flex-direction:column;text-align:left;white-space:normal;gap:6px;padding:12px;min-width:0;font-size:12px;line-height:1.4}
+#demoCasePicker [data-demo-case]:hover,#demoCasePicker button:focus-visible{border-color:#e20074;outline:2px solid #e20074;outline-offset:1px}
+#demoCasePicker strong{font-size:14px;color:#b90064}#demoCasePicker small{font-size:11px;color:#715f78}
+#demoCasePicker [data-demo-close]{font-size:20px;padding:4px 12px}
+@media(max-width:600px){#demoCasePicker{padding:14px}#demoCasePicker .demoPickerGrid{grid-template-columns:1fr}}
+
 </style><style>
 /* V2.8: one simple time split, progressive costs, separate cost layers */
 .guideTimeSplit,.guideSplitQuick input[type=range]{width:100%;accent-color:#e20074;cursor:pointer;margin:13px 0;min-height:25px}
@@ -2436,7 +2451,507 @@ function completeWizard(){setEngine();hasResults=true;showResults();}
 function showResults(){document.body.classList.remove('guideWizard');document.body.classList.add('guideResults');g('guidedRoot').hidden=true;buildQuick();calculate();window.scrollTo({top:0,behavior:'instant'});const r=document.querySelector('#inputView>.right');if(r)r.scrollTop=0;}
 function newCase(){if(hasResults&&!(confirm(tr('Aktuellen Case verlassen und neue Erfassung beginnen? Vorher bei Bedarf JSON exportieren.','Start a new assessment? Export JSON first if you want to save the current case.'))))return;
  hasResults=false;draft=newDraft();clearAll();showGuide();}
-function loadGuideDemo(){loadDemo();g('contractIncludedInPlatform').value=hasContract()?(g('portfolioMode').value==='shared'?'yes':'no'):'';calculate();hasResults=true;showResults();}
+/* Synthetic illustrative planning assumptions, not benchmarks or vendor quotations.
+   All prices EUR; volume and operating costs monthly; task times minutes; horizon 24 months.
+   Future task time includes routine rework; the separate unchanged review task is not double-counted. */
+const demoCases=[
+  {
+    "id": "it",
+    "band": "positive",
+    "name": [
+      "IT-Ticketbearbeitung",
+      "IT ticket handling"
+    ],
+    "area": [
+      "IT-Service",
+      "IT service"
+    ],
+    "description": [
+      "Standardtickets werden gelesen, klassifiziert und als Antwortentwurf vorbereitet. Mitarbeitende prüfen und versenden.",
+      "Standard tickets are read, classified and drafted; agents review and send."
+    ],
+    "task": [
+      "Ticket-Triage und Antwortentwurf",
+      "Ticket triage and response drafting"
+    ],
+    "reviewTask": [
+      "Freigabe und Versand",
+      "Review and send"
+    ],
+    "role": [
+      "IT-Service-Mitarbeitende",
+      "IT service agents"
+    ],
+    "volume": 1200,
+    "rate": 42,
+    "before": 12,
+    "future": 5,
+    "manual": 3,
+    "adoption": 80,
+    "realization": 65,
+    "setup": 10000,
+    "ops": 500,
+    "fee": 300
+  },
+  {
+    "id": "meeting",
+    "band": "positive",
+    "name": [
+      "Meeting-Dokumentation",
+      "Meeting documentation"
+    ],
+    "area": [
+      "Administration",
+      "Administration"
+    ],
+    "description": [
+      "Interne Projektmeetings werden transkribiert; KI entwirft Protokoll und Aufgabenliste, die Projektleitung prüft.",
+      "Internal project meetings are transcribed; AI drafts minutes and actions for project leads to verify."
+    ],
+    "task": [
+      "Protokoll und Aufgabenliste erstellen",
+      "Draft minutes and action list"
+    ],
+    "reviewTask": [
+      "Abnahme und Verteiler",
+      "Approval and distribution"
+    ],
+    "role": [
+      "Projektkoordination",
+      "Project coordinators"
+    ],
+    "volume": 240,
+    "rate": 65,
+    "before": 35,
+    "future": 12,
+    "manual": 8,
+    "adoption": 85,
+    "realization": 60,
+    "setup": 5000,
+    "ops": 200,
+    "fee": 300
+  },
+  {
+    "id": "customer",
+    "band": "positive",
+    "name": [
+      "Customer Service",
+      "Customer service"
+    ],
+    "area": [
+      "Kundenservice",
+      "Customer service"
+    ],
+    "description": [
+      "Ein Serviceteam beantwortet häufige schriftliche Anfragen mit KI-Entwürfen aus freigegebenen Wissensartikeln.",
+      "A service team handles frequent written requests using AI drafts based on approved knowledge articles."
+    ],
+    "task": [
+      "Anfrage verstehen und Antwort entwerfen",
+      "Understand request and draft response"
+    ],
+    "reviewTask": [
+      "Antwort prüfen und senden",
+      "Verify and send response"
+    ],
+    "role": [
+      "Service-Mitarbeitende",
+      "Service agents"
+    ],
+    "volume": 4000,
+    "rate": 36,
+    "before": 8,
+    "future": 3,
+    "manual": 2,
+    "adoption": 75,
+    "realization": 65,
+    "setup": 18000,
+    "ops": 800,
+    "fee": 1100
+  },
+  {
+    "id": "software",
+    "band": "positive",
+    "name": [
+      "Softwareentwicklung",
+      "Software development"
+    ],
+    "area": [
+      "Engineering",
+      "Engineering"
+    ],
+    "description": [
+      "Entwickler nutzen KI für wiederkehrende Implementierungsaufgaben; Code-Review und Tests bleiben menschlich verantwortet.",
+      "Developers use AI for recurring implementation tasks; code review and testing remain human-owned."
+    ],
+    "task": [
+      "Implementierung und Testentwurf",
+      "Implementation and test drafting"
+    ],
+    "reviewTask": [
+      "Code-Review und Tests",
+      "Code review and testing"
+    ],
+    "role": [
+      "Softwareentwickler",
+      "Software developers"
+    ],
+    "volume": 350,
+    "rate": 85,
+    "before": 75,
+    "future": 42,
+    "manual": 30,
+    "adoption": 70,
+    "realization": 50,
+    "setup": 14000,
+    "ops": 350,
+    "fee": 900
+  },
+  {
+    "id": "invoice",
+    "band": "borderline",
+    "name": [
+      "Rechnungsverarbeitung",
+      "Invoice processing"
+    ],
+    "area": [
+      "Finanzen",
+      "Finance"
+    ],
+    "description": [
+      "KI extrahiert Angaben aus heterogenen Eingangsrechnungen. Buchungsprüfung und Freigabe verbleiben im Finanzteam.",
+      "AI extracts data from heterogeneous incoming invoices; posting checks and approval stay with finance."
+    ],
+    "task": [
+      "Rechnungsdaten erfassen",
+      "Capture invoice data"
+    ],
+    "reviewTask": [
+      "Kontierung und Freigabe prüfen",
+      "Verify coding and approval"
+    ],
+    "role": [
+      "Kreditorenbuchhaltung",
+      "Accounts payable staff"
+    ],
+    "volume": 2000,
+    "rate": 38,
+    "before": 7,
+    "future": 3,
+    "manual": 3,
+    "adoption": 75,
+    "realization": 55,
+    "setup": 24000,
+    "ops": 650,
+    "fee": 500
+  },
+  {
+    "id": "ba",
+    "band": "borderline",
+    "name": [
+      "Business Analysis",
+      "Business analysis"
+    ],
+    "area": [
+      "Beratung",
+      "Consulting"
+    ],
+    "description": [
+      "KI erstellt Entwürfe aus Interviewnotizen; Analyse, fachliche Validierung und Stakeholder-Abstimmung bleiben notwendig.",
+      "AI drafts requirements from interview notes; analysis, validation and stakeholder alignment remain necessary."
+    ],
+    "task": [
+      "Anforderungen ausarbeiten",
+      "Draft requirements"
+    ],
+    "reviewTask": [
+      "Fachliche Validierung",
+      "Domain validation"
+    ],
+    "role": [
+      "Business Analysts",
+      "Business analysts"
+    ],
+    "volume": 65,
+    "rate": 85,
+    "before": 180,
+    "future": 105,
+    "manual": 60,
+    "adoption": 70,
+    "realization": 45,
+    "setup": 29000,
+    "ops": 350,
+    "fee": 450
+  },
+  {
+    "id": "knowledge",
+    "band": "borderline",
+    "name": [
+      "Wissensmanagement",
+      "Knowledge management"
+    ],
+    "area": [
+      "Corporate Services",
+      "Corporate services"
+    ],
+    "description": [
+      "Eine interne Suche mit Quellenantworten reduziert Recherchezeit, erfordert aber Pflege der Wissensbasis und Zugriffsrechte.",
+      "Source-grounded internal search reduces research time but requires knowledge-base and access maintenance."
+    ],
+    "task": [
+      "Information recherchieren und aufbereiten",
+      "Find and summarize information"
+    ],
+    "reviewTask": [
+      "Quellen prüfen",
+      "Verify sources"
+    ],
+    "role": [
+      "Fachmitarbeitende",
+      "Subject-matter staff"
+    ],
+    "volume": 800,
+    "rate": 52,
+    "before": 18,
+    "future": 8,
+    "manual": 4,
+    "adoption": 65,
+    "realization": 45,
+    "setup": 22000,
+    "ops": 700,
+    "fee": 600
+  },
+  {
+    "id": "report",
+    "band": "borderline",
+    "name": [
+      "Management Reporting",
+      "Management reporting"
+    ],
+    "area": [
+      "Controlling",
+      "Controlling"
+    ],
+    "description": [
+      "KI formuliert Kommentare zu standardisierten Kennzahlen. Datenprüfung und Freigabe bleiben bei Controlling.",
+      "AI drafts commentary on standardized KPIs; controllers retain data checks and sign-off."
+    ],
+    "task": [
+      "Berichtskommentar erstellen",
+      "Draft report commentary"
+    ],
+    "reviewTask": [
+      "Kennzahlen und Freigabe prüfen",
+      "Validate KPIs and approve"
+    ],
+    "role": [
+      "Controller",
+      "Controllers"
+    ],
+    "volume": 50,
+    "rate": 72,
+    "before": 90,
+    "future": 40,
+    "manual": 35,
+    "adoption": 80,
+    "realization": 60,
+    "setup": 18000,
+    "ops": 400,
+    "fee": 500
+  },
+  {
+    "id": "bid",
+    "band": "negative",
+    "name": [
+      "Angebots- und Ausschreibungserstellung",
+      "Bid and proposal preparation"
+    ],
+    "area": [
+      "Vertrieb",
+      "Sales"
+    ],
+    "description": [
+      "Wenige komplexe Ausschreibungen werden mit KI-Entwürfen bearbeitet; individuelle Kalkulation und Freigaben bleiben zeitintensiv.",
+      "A small number of complex bids use AI drafts; bespoke pricing and approvals remain time-consuming."
+    ],
+    "task": [
+      "Angebotstext entwerfen",
+      "Draft proposal text"
+    ],
+    "reviewTask": [
+      "Kalkulation und Freigabe",
+      "Pricing and approval"
+    ],
+    "role": [
+      "Bid Manager",
+      "Bid managers"
+    ],
+    "volume": 18,
+    "rate": 95,
+    "before": 240,
+    "future": 145,
+    "manual": 120,
+    "adoption": 65,
+    "realization": 50,
+    "setup": 9000,
+    "ops": 350,
+    "fee": 450
+  },
+  {
+    "id": "contract",
+    "band": "negative",
+    "name": [
+      "Vertragsanalyse",
+      "Contract analysis"
+    ],
+    "area": [
+      "Legal",
+      "Legal"
+    ],
+    "description": [
+      "KI markiert Klauseln in wenigen individuellen Verträgen; juristische Bewertung und abschließende Prüfung sind unverzichtbar.",
+      "AI flags clauses in a small number of bespoke contracts; legal assessment and final review remain essential."
+    ],
+    "task": [
+      "Klauseln extrahieren und vergleichen",
+      "Extract and compare clauses"
+    ],
+    "reviewTask": [
+      "Juristische Bewertung",
+      "Legal assessment"
+    ],
+    "role": [
+      "Juristen",
+      "Legal counsel"
+    ],
+    "volume": 35,
+    "rate": 110,
+    "before": 120,
+    "future": 70,
+    "manual": 90,
+    "adoption": 60,
+    "realization": 40,
+    "setup": 16000,
+    "ops": 600,
+    "fee": 500
+  },
+  {
+    "id": "hr",
+    "band": "negative",
+    "name": [
+      "HR-Dokumentenverarbeitung",
+      "HR document processing"
+    ],
+    "area": [
+      "Personal",
+      "HR"
+    ],
+    "description": [
+      "Ein kleines HR-Team verarbeitet Standarddokumente mit KI-Entwürfen, behält Datenschutz- und Inhaltsprüfung bei.",
+      "A small HR team uses AI drafts for standard documents while retaining privacy and content checks."
+    ],
+    "task": [
+      "Dokument entwerfen und erfassen",
+      "Draft and capture document"
+    ],
+    "reviewTask": [
+      "Datenschutz und Inhalt prüfen",
+      "Verify privacy and content"
+    ],
+    "role": [
+      "HR-Sachbearbeitung",
+      "HR administrators"
+    ],
+    "volume": 100,
+    "rate": 48,
+    "before": 25,
+    "future": 15,
+    "manual": 10,
+    "adoption": 70,
+    "realization": 40,
+    "setup": 9000,
+    "ops": 300,
+    "fee": 350
+  },
+  {
+    "id": "quality",
+    "band": "negative",
+    "name": [
+      "Qualitätsmanagement",
+      "Quality management"
+    ],
+    "area": [
+      "Operations",
+      "Operations"
+    ],
+    "description": [
+      "KI strukturiert Abweichungsberichte einer kleinen Produktion; Ursachenanalyse und Maßnahmenfreigabe bleiben manuell.",
+      "AI structures nonconformance reports for a small production operation; root-cause analysis and corrective-action approval remain manual."
+    ],
+    "task": [
+      "Abweichungsbericht strukturieren",
+      "Structure nonconformance report"
+    ],
+    "reviewTask": [
+      "Ursachenanalyse und Freigabe",
+      "Root-cause analysis and approval"
+    ],
+    "role": [
+      "Qualitätsingenieure",
+      "Quality engineers"
+    ],
+    "volume": 130,
+    "rate": 60,
+    "before": 45,
+    "future": 30,
+    "manual": 40,
+    "adoption": 65,
+    "realization": 40,
+    "setup": 22000,
+    "ops": 500,
+    "fee": 600
+  }
+];
+function demoData(c){
+ const lang=L()==='en'?1:0, t=x=>x[lang], illustrative=tr('Illustrative Annahmen, keine Kundendaten oder Marktbenchmarks.','Illustrative assumptions, not customer data or market benchmarks.');
+ return {inputs:{
+   caseName:'Demo · '+t(c.name),owner:t(c.area),description:illustrative+' '+t(c.description),
+   kpi:tr('Bearbeitungszeit bei unveränderter Freigabequalität','Processing time with unchanged approval quality'),
+   volume:c.volume,fulltime:40,dayHours:8,grossLoad:25,portfolioMode:'single',
+   portfolioAllocation:'equal',currentTechMonthly:0,remainingTechMonthly:0,fx:0.89494,
+   costDevelopment:c.setup*.4,costIntegration:c.setup*.25,costData:c.setup*.15,costTraining:c.setup*.1,costGovernance:c.setup*.1,
+   costHosting:c.ops*.2,costLicense:0,costMaintenance:c.ops*.4,costMonitoring:c.ops*.2,costOperations:c.ops*.2,
+   contractFee:c.fee,extraCoordDays:0,extraDependencyOpex:0,
+   rulesName:tr('Vorlagen und feste Regeln','Templates and fixed rules'),
+   rulesDescription:tr('Standardisierte Vorlagen und regelbasierte Vorarbeit; keine generative KI.','Standardized templates and rule-based preparation; no generative AI.'),
+   rulesSetup:Math.round(c.setup*.25),rulesOpex:Math.round(c.ops*.25)
+ },costMode:'advanced',timeMode:'steps',comparisonMode:'today',staff:[{id:1,name:t(c.role),rate:c.rate,salaryType:'hour',amount:null}],
+ steps:[
+  {id:1,role:1,name:t(c.task),before:c.before,future:c.future,rules:Math.round(c.before*.85*10)/10,mode:'assist',share:c.adoption,model:'contract',review:'always',criticality:'medium',errorRate:0,rework:0,aiError:0,aiRework:0,depLevel:'none',depRate:0,depMinutes:0},
+  {id:2,role:1,name:t(c.reviewTask),before:c.manual,rules:c.manual,mode:'manual',errorRate:0,rework:0,aiError:0,aiRework:0}
+ ],ranges:{horizon:24,realization:c.realization}};
+}
+function loadGuideDemo(c){
+ loadData(demoData(c));hasResults=true;showResults();
+}
+function showDemoPicker(){
+ let dialog=g('demoCasePicker');
+ if(!dialog){
+  dialog=document.createElement('dialog');dialog.id='demoCasePicker';dialog.setAttribute('aria-labelledby','demoPickerTitle');
+  document.body.appendChild(dialog);
+ }
+ const label={positive:tr('Klar positiv','Clearly positive'),borderline:tr('Grenzwertig','Borderline'),negative:tr('Negativ','Negative')};
+ const local=x=>x[L()==='en'?1:0];
+ const money=n=>new Intl.NumberFormat(L()==='en'?'en-IE':'de-DE',{style:'currency',currency:'EUR',maximumFractionDigits:0}).format(n);
+ dialog.innerHTML=`<div class="demoPickerHeader"><h2 id="demoPickerTitle">${tr('Demo-Use-Case auswählen','Choose a demo use case')}</h2><button type="button" data-demo-close aria-label="${tr('Schließen','Close')}">×</button></div>
+ <p class="demoPickerNote">${tr('Alle Werte sind illustrative Annahmen, keine Kunden- oder Benchmarkdaten. Einstufung bezieht sich auf KI vs. heute über 24 Monate (grenzwertig: ROI innerhalb ±15 %). Auswahl ersetzt die aktuellen Eingaben; bei Bedarf vorher speichern.','All values are illustrative assumptions, not customer or benchmark data. Categories refer to AI vs. today over 24 months (borderline: ROI within ±15%). Selecting replaces current inputs; save first if needed.')}</p>
+ ${Object.entries(label).map(([band,title])=>`<section class="demoPickerGroup"><h3>${title}</h3><div class="demoPickerGrid">${demoCases.filter(c=>c.band===band).map(c=>`<button type="button" data-demo-case="${c.id}"><strong>${clean(local(c.name))}</strong><small>${clean(local(c.area))} · ${c.volume.toLocaleString(L())} ${tr('Vorgänge/Monat','cases/month')}</small><span>${clean(local(c.description))}</span><small>${money(c.setup)} ${tr('Einführung','setup')} · ${money(c.ops+c.fee)}${tr('/Monat KI-Betrieb','/month AI operations')}</small></button>`).join('')}</div></section>`).join('')}
+ <p class="demoPickerNote">${tr('Alle Parameter sind nach dem Laden frei editierbar.','All parameters are editable after loading.')}</p>`;
+ dialog.querySelector('[data-demo-close]').onclick=()=>dialog.close();
+ dialog.querySelectorAll('[data-demo-case]').forEach(button=>button.onclick=()=>{const c=demoCases.find(x=>x.id===button.dataset.demoCase);dialog.close();loadGuideDemo(c);});
+ dialog.showModal();
+}
+
 function quickField(key,title,value,type='number',opts=null,extra=''){
  const entry=opts?`<select data-qfield="${clean(key)}">${opts.map(([v,label])=>`<option value="${clean(v)}" ${String(v)===String(value)?'selected':''}>${clean(label)}</option>`).join('')}</select>`:`<input type="${type}" data-qfield="${clean(key)}" value="${clean(value??'')}" ${type==='number'?'min="0"':''} ${extra}>`;
  return `<div class="guideQfield"><label>${clean(title)}</label>${entry}</div>`;
@@ -2583,7 +3098,7 @@ function init(){
  function updateChrome(){const lang=L();g('guideDE').classList.toggle('active',lang==='de');g('guideEN').classList.toggle('active',lang==='en');g('guideDemo').textContent=tr('◉ Demo laden','◉ Load demo');g('guideImport').textContent=tr('↥ Daten laden','↥ Load data');g('guideSave').textContent=tr('↧ Daten speichern','↧ Save data');g('guideNew').textContent=tr('＋ Neuer Case','＋ New case');g('guideFullSummary').textContent=tr('Alle Parameter','All parameters');g('guideFAQSummary').textContent=tr('Hilfe & FAQ','Help & FAQ');if(document.body.classList.contains('guideWizard'))renderGuide();else if(document.body.classList.contains('guideResults'))buildQuick();}
   g('compareRules')?.addEventListener('click',()=>buildQuick());
  g('guideDE').onclick=()=>{window.setToolLanguage('de');updateChrome();};g('guideEN').onclick=()=>{window.setToolLanguage('en');updateChrome();};
- g('guideDemo').onclick=()=>loadGuideDemo();g('guideNew').onclick=()=>newCase();
+ g('guideDemo').onclick=()=>showDemoPicker();g('demoBtn').onclick=()=>showDemoPicker();g('guideNew').onclick=()=>newCase();
  const draftImport=document.createElement('input');draftImport.type='file';draftImport.accept='.json,.xlsx,application/json,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';draftImport.hidden=true;draftImport.id='guideDraftImport';document.body.appendChild(draftImport);
  /* File-menu actions are delegated below. */
  function saveGuidedJson(){
@@ -2923,7 +3438,7 @@ body.guideWizard .guideCostMath{display:none!important}
  const observer=new MutationObserver(()=>{if(document.body.classList.contains('guideResults')){const curr=$('guideLeanResults');if(curr&&!curr.innerHTML.trim()&&window.latest?.results)render();}});
  observer.observe(document.body,{attributes:true,attributeFilter:['class']});
  // The model's existing rules-only handler was compared incrementally; the new view is rules vs today.
- document.addEventListener('click',e=>{if(e.target.id==='guideDemo'||e.target.id==='guideNew')view='ai';},true);
+ document.addEventListener('click',e=>{if(e.target.closest('[data-demo-case]')||e.target.id==='guideNew')view='ai';},true);
  const langEvents=['guideDE','guideEN'];langEvents.forEach(id=>$(id)?.addEventListener('click',()=>{if(originalCompare)originalCompare.textContent=say('Regeln vs. heute','Rules vs. today');render();}));
  window.guideRenderLean=render;
  setTimeout(()=>{if(originalCompare)originalCompare.textContent=say('Regeln vs. heute','Rules vs. today');render();},0);

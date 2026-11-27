@@ -70,7 +70,8 @@ jobs:
       ${{ always() && needs.visual-review.result == 'success' &&
       github.event_name == 'pull_request' &&
       github.event.pull_request.head.repo.full_name == github.repository &&
-      (startsWith(github.head_ref, 'feature/ai-or-nay-') ||
+      (github.head_ref == 'feature/demo-use-cases' ||
+      startsWith(github.head_ref, 'feature/ai-or-nay-') ||
       startsWith(github.head_ref, 'fix/ai-or-nay-') ||
       (github.head_ref == 'develop' && github.base_ref == 'main')) }}
     runs-on: ubuntu-24.04
