@@ -2,7 +2,7 @@
 (() => {
  'use strict';
  const finite=x=>typeof x==='number'&&Number.isFinite(x);
- const numeric=x=>x!==null&&x!==undefined&&x!==''&&Number.isFinite(Number(x))?Number(x):null;
+ const numeric=x=>x!==null&&x!==undefined&&String(x).trim()!==''&&Number.isFinite(Number(x))?Number(x):null;
  const tr=(de,en)=>window.appLanguage==='en'?en:de;
  const locale=()=>tr('de-DE','en-GB');
  const fmt=(n,maximumFractionDigits=2)=>finite(n)?n.toLocaleString(locale(),{maximumFractionDigits}):'—';
@@ -78,7 +78,7 @@
    if(!s.steps.some(t=>String(t.role)===String(p.id)))return;
    const name=p.name||tr('Rolle ','Role ')+(i+1);
    add(['staff',i,'rate'],name+' · Vergütung',name+' · compensation',p.salaryType==='gross'?'€/yr':p.salaryType==='day'?'€/d':'€/h',field('role:'+p.id+':rate')+','+roleField(p.id,'rate'));
-   if(s.timeMode==='staff')add(['staff',i,'amount'],name+' · Einsatz',name+' · allocation',p.salaryType==='hour'?'h/wk':'FTE',roleField(p.id,'amount'),{min:0.000001});
+   if(s.timeMode==='staff')add(['staff',i,'amount'],name+' · Einsatz',name+' · allocation',p.salaryType==='hour'?'h/wk':'FTE',field('role:'+p.id+':amount')+','+roleField(p.id,'amount'),{min:0.000001});
   });
   s.steps.forEach((t,i)=>{
    const name=t.name||tr('Task ','Task ')+(i+1), ai=aiStep(t);
