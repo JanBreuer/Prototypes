@@ -112,6 +112,15 @@ for(const locale of ['DE','EN']){
    await page.locator('#demoCasePicker [data-demo-case="'+id+'"]').click();
    await expect(page.locator('#demoCasePicker')).toHaveAttribute('data-stage','preview');
    await expect(page.locator('[data-demo-confirm]')).toContainText(locale==='EN'?'Calculate AI potential':'KI-Potenzial berechnen');
+   const expectedTeam={it:3,meeting:6,customer:6,software:6,invoice:3,ba:4,knowledge:10,report:3,bid:2,contract:3,hr:2,quality:4}[id];
+   await expect(page.locator('.demoPersonas svg')).toHaveCount(expectedTeam);
+   await expect(page.locator('[data-demo-metric="team"]')).toContainText(String(expectedTeam));
+   const parseMetric=async key=>Number((await page.locator('[data-demo-metric="'+key+'"]').innerText()).replace(/[^\d,.]/g,'').replace(locale==='EN'?/,/g:/\./g,'').replace(',','.'));
+   const totalHours=await parseMetric('hours'),totalCases=await parseMetric('volume');
+   expect(await parseMetric('person-hours')).toBeCloseTo(totalHours/expectedTeam,0);
+   expect(await parseMetric('person-volume')).toBeCloseTo(totalCases/expectedTeam,0);
+   expect(await parseMetric('fte')).toBeCloseTo(totalHours/(40*52/12),1);
+   expect(await parseMetric('share')).toBeLessThanOrEqual(65);
    await page.locator('[data-demo-confirm]').click();
    await expect(page.locator('body')).toHaveClass(/guideResults/);
    const r=await page.evaluate(()=>window.latest.results);
@@ -174,5 +183,8 @@ test('demo baseline preview fits mobile and localizes',async({page})=>{
  await expect(page.locator('[data-demo-metric="cost"]')).toContainText('12,600.00');
  expect(await page.locator('#demoCasePicker').evaluate(el=>el.scrollWidth<=el.clientWidth+1)).toBe(true);
  await expect(page.locator('[data-demo-confirm]')).toBeInViewport();
+ await expect(page.locator('[data-demo-metric="person-hours"]')).toHaveText('100 h');
+ await expect(page.locator('[data-demo-metric="fte"]')).toHaveText('1.73 FTE');
+ await expect(page.locator('[data-demo-metric="share"]')).toContainText('58 %');
  await page.locator('[data-demo-confirm]').click();await expect(page.locator('body')).toHaveClass(/guideResults/);
 });
