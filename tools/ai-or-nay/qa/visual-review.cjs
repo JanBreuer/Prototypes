@@ -9,7 +9,7 @@ async function server(dir,port){
  const p=spawn('python3',['-m','http.server',String(port),'--bind','127.0.0.1'],{cwd:dir,stdio:'ignore'});
  try { for(let i=0;i<100;i++){try{if((await fetch('http://127.0.0.1:'+port+urlPath)).ok)return p;}catch{} await new Promise(r=>setTimeout(r,100));}throw Error('Server unavailable: '+dir); }catch(e){p.kill();throw e;}
 }
-async function capture(browser,port,w,h,results){
+async function capture(browser,port,w,h,results,sensitivity=false){
  const ctx=await browser.newContext({viewport:{width:w,height:h},deviceScaleFactor:1,locale:'de-DE',timezoneId:'Europe/Berlin',reducedMotion:'reduce'});
  try{
   const page=await ctx.newPage();
@@ -20,6 +20,15 @@ async function capture(browser,port,w,h,results){
   if(results){await page.locator('#guideDemo').click();if(await page.locator('#demoCasePicker').isVisible())await page.locator('#demoCasePicker [data-demo-case="it"]').click();await page.locator('body.guideResults').waitFor();await page.waitForFunction(()=>window.latest?.results?.errors?.length===0);}
   else await page.locator('#guidedRoot').waitFor({state:'visible'});
   await page.evaluate(async()=>{await document.fonts.ready;window.scrollTo(0,0);if(document.activeElement instanceof HTMLElement)document.activeElement.blur();});
+  if(sensitivity){
+   const panel=page.locator('#roiSensitivity');
+   if(await panel.count()){
+    await panel.locator('summary').click();await panel.locator('.sensitivityRow').first().waitFor({state:'visible'});
+    await panel.evaluate(el=>el.scrollIntoView({block:'start',behavior:'instant'}));
+   }else{
+    await page.locator('#guideLeanResults').evaluate(el=>el.scrollIntoView({block:'end',behavior:'instant'}));
+   }
+  }
   return await page.screenshot({animations:'disabled',caret:'hide',scale:'css'});
  }finally{await ctx.close();}
 }
@@ -46,8 +55,10 @@ async function compare(browser,before,after){
  try{
   base=await server(baseDir,8766);head=await server(headDir,8767);browser=await chromium.launch();
   const results=[];
-  for(const [name,w,h,demo] of scenarios){
-   const before=await capture(browser,8766,w,h,demo),after=await capture(browser,8767,w,h,demo),diff=await compare(browser,before,after);
+  const hasSensitivity=await fs.access(path.join(headDir,'tools/ai-or-nay/roi-sensitivity.js')).then(()=>true,()=>false);
+  const cases=hasSensitivity?[...scenarios,['desktop-sensitivity',1440,900,true,true],['mobile-sensitivity',390,844,true,true]]:scenarios;
+  for(const [name,w,h,demo,sensitivity] of cases){
+   const before=await capture(browser,8766,w,h,demo,sensitivity),after=await capture(browser,8767,w,h,demo,sensitivity),diff=await compare(browser,before,after);
    await Promise.all([fs.writeFile(path.join(output,name+'-before.png'),before),fs.writeFile(path.join(output,name+'-after.png'),after),fs.writeFile(path.join(output,name+'-diff.png'),Buffer.from(diff.png,'base64'))]);
    results.push({name,percent:diff.percent.toFixed(2),w,h});
   }
