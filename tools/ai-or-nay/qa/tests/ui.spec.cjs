@@ -9,6 +9,7 @@ async function open(page) {
 async function demo(page) {
   await open(page);
   await page.locator('#guideDemo').click();
+  await page.locator('#demoCasePicker [data-demo-case="it"]').click();
   await expect(page.locator('body')).toHaveClass(/guideResults/);
   await expect.poll(()=>page.evaluate(()=>window.latest?.results?.errors?.length)).toBe(0);
 }
@@ -93,4 +94,43 @@ test('desktop and mobile demo screenshots for human review',async({page},info)=>
   await page.screenshot({path:info.outputPath('desktop-results.png'),animations:'disabled'});
   await page.setViewportSize({width:390,height:844});
   await page.screenshot({path:info.outputPath('mobile-results.png'),animations:'disabled'});
+});
+
+const demoFixtures=[
+ ['it',44182.4,'positive'],['meeting',56195.2,'positive'],['customer',76800,'positive'],['software',93445,'positive'],
+ ['invoice',-1440,'borderline'],['ba',4011.25,'borderline'],['knowledge',-4528,'borderline'],['report',-5040,'borderline'],
+ ['bid',-7081.5,'negative'],['contract',-23920,'negative'],['hr',-19224,'negative'],['quality',-36232,'negative']
+];
+for(const locale of ['DE','EN']){
+ test('all twelve demo scenarios load with independently expected economics '+locale,async({page})=>{
+  await open(page);await page.locator('#guide'+locale).click();
+  for(const [id,net,band] of demoFixtures){
+   await page.locator('#guideDemo').click();
+   await expect(page.locator('#demoCasePicker [data-demo-case]')).toHaveCount(12);
+   await expect(page.locator('#demoPickerTitle')).toContainText(locale==='EN'?'Choose a demo use case':'Demo-Use-Case auswählen');
+   await page.locator('#demoCasePicker [data-demo-case="'+id+'"]').click();
+   await expect(page.locator('body')).toHaveClass(/guideResults/);
+   const r=await page.evaluate(()=>window.latest.results);
+   expect(r.errors, id).toEqual([]);expect(r.currentNet,id).toBeCloseTo(net,2);
+   if(band==='positive')expect(r.currentROI).toBeGreaterThan(30);
+   else if(band==='negative')expect(r.currentROI).toBeLessThan(-15);
+   else expect(Math.abs(r.currentROI)).toBeLessThanOrEqual(15);
+   await expect(page.locator('#description')).toHaveValue(new RegExp(locale==='EN'?'Illustrative assumptions':'Illustrative Annahmen'));
+  }
+ });
+}
+test('demo picker cancels without replacement and supports editing on mobile',async({page})=>{
+ await page.setViewportSize({width:390,height:844});await demo(page);
+ const old=await page.evaluate(()=>window.latest.results.currentNet);
+ await page.locator('#guideDemo').click();
+ await expect(page.locator('#demoCasePicker')).toBeVisible();
+ expect(await page.evaluate(()=>document.querySelector('#demoCasePicker').scrollWidth)).toBeLessThanOrEqual(390);
+ await page.keyboard.press('Escape');await expect(page.locator('#demoCasePicker')).not.toBeVisible();
+ expect(await page.evaluate(()=>window.latest.results.currentNet)).toBeCloseTo(old,6);
+ await page.locator('#guideQuick [data-qfield="volume"]').fill('1300');
+ await expect.poll(()=>page.evaluate(()=>window.latest.results.vol)).toBe(1300);
+ expect(await page.evaluate(()=>window.latest.results.currentNet)).toBeGreaterThan(old);
+ await page.locator('#guideDemo').click();
+ await page.locator('#demoCasePicker [data-demo-case="it"]').click();
+ expect(await page.evaluate(()=>window.latest.results.vol)).toBe(1200);
 });
