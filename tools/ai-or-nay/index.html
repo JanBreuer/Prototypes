@@ -2547,7 +2547,10 @@ const demoCases=[
     "setup": 10000,
     "ops": 500,
     "fee": 300,
-    "team": 3
+    "team": 3,
+    "ruleTimeSaving": 10,
+    "ruleSetupShare": 0.4,
+    "ruleOpexShare": 0.35
   },
   {
     "id": "meeting",
@@ -2586,7 +2589,10 @@ const demoCases=[
     "setup": 5000,
     "ops": 200,
     "fee": 300,
-    "team": 6
+    "team": 6,
+    "ruleTimeSaving": 8,
+    "ruleSetupShare": 0.35,
+    "ruleOpexShare": 0.35
   },
   {
     "id": "customer",
@@ -2625,7 +2631,10 @@ const demoCases=[
     "setup": 18000,
     "ops": 800,
     "fee": 1100,
-    "team": 6
+    "team": 6,
+    "ruleTimeSaving": 10,
+    "ruleSetupShare": 0.4,
+    "ruleOpexShare": 0.4
   },
   {
     "id": "software",
@@ -2664,7 +2673,10 @@ const demoCases=[
     "setup": 14000,
     "ops": 350,
     "fee": 900,
-    "team": 6
+    "team": 6,
+    "ruleTimeSaving": 5,
+    "ruleSetupShare": 0.35,
+    "ruleOpexShare": 0.4
   },
   {
     "id": "invoice",
@@ -2742,7 +2754,10 @@ const demoCases=[
     "setup": 29000,
     "ops": 350,
     "fee": 450,
-    "team": 4
+    "team": 4,
+    "ruleTimeSaving": 10,
+    "ruleSetupShare": 0.35,
+    "ruleOpexShare": 0.35
   },
   {
     "id": "knowledge",
@@ -2781,7 +2796,10 @@ const demoCases=[
     "setup": 22000,
     "ops": 700,
     "fee": 600,
-    "team": 10
+    "team": 10,
+    "ruleTimeSaving": 12,
+    "ruleSetupShare": 0.3,
+    "ruleOpexShare": 0.3
   },
   {
     "id": "report",
@@ -2859,7 +2877,10 @@ const demoCases=[
     "setup": 9000,
     "ops": 350,
     "fee": 450,
-    "team": 2
+    "team": 2,
+    "ruleTimeSaving": 10,
+    "ruleSetupShare": 0.35,
+    "ruleOpexShare": 0.35
   },
   {
     "id": "contract",
@@ -2991,10 +3012,10 @@ function demoData(c){
    contractFee:c.fee,extraCoordDays:0,extraDependencyOpex:0,
    rulesName:tr('Vorlagen und feste Regeln','Templates and fixed rules'),
    rulesDescription:tr('Standardisierte Vorlagen und regelbasierte Vorarbeit; keine generative KI.','Standardized templates and rule-based preparation; no generative AI.'),
-   rulesSetup:Math.round(c.setup*.25),rulesOpex:Math.round(c.ops*.25)
+   rulesSetup:Math.round(c.setup*(c.ruleSetupShare??.25)),rulesOpex:Math.round(c.ops*(c.ruleOpexShare??.25))
  },costMode:'advanced',timeMode:'steps',comparisonMode:'today',staff:[{id:1,name:t(c.role),rate:c.rate,salaryType:'hour',amount:null}],
  steps:[
-  {id:1,role:1,name:t(c.task),before:c.before,future:c.future,rules:Math.round(c.before*.85*10)/10,mode:'assist',share:c.adoption,model:'contract',review:'always',criticality:'medium',errorRate:0,rework:0,aiError:0,aiRework:0,depLevel:'none',depRate:0,depMinutes:0},
+  {id:1,role:1,name:t(c.task),before:c.before,future:c.future,rules:Math.round(c.before*(1-(c.ruleTimeSaving??15)/100)*10)/10,mode:'assist',share:c.adoption,model:'contract',review:'always',criticality:'medium',errorRate:0,rework:0,aiError:0,aiRework:0,depLevel:'none',depRate:0,depMinutes:0},
   {id:2,role:1,name:t(c.reviewTask),before:c.manual,rules:c.manual,mode:'manual',errorRate:0,rework:0,aiError:0,aiRework:0}
  ],ranges:{horizon:24,realization:c.realization}};
 }
