@@ -51,7 +51,7 @@ test('mobile briefing fits and closes without advancing the wizard',async({page}
 });
 test('guidance in results editor leaves actual ROI untouched',async({page},testInfo)=>{
  await start(page);await page.locator('#opHints').check();await page.locator('#opClose').click();
- await page.locator('#guideDemo').click();await page.locator('#demoCasePicker [data-demo-case="it"]').click();
+ await page.locator('#guideDemo').click();await page.locator('#demoCasePicker [data-demo-case="it"]').click();await page.locator('[data-demo-confirm]').click();
  await page.locator('body.guideResults').waitFor();await page.waitForFunction(()=>window.latest?.results?.errors?.length===0);
  const snapshot=await page.evaluate(()=>JSON.stringify(window.latest));
  await expect(page.locator('#guideQuick .operatorHint').first()).toBeAttached();
