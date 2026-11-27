@@ -22,7 +22,9 @@ async function capture(browser,port,w,h,results,sensitivity=false){
   await page.evaluate(async()=>{await document.fonts.ready;window.scrollTo(0,0);if(document.activeElement instanceof HTMLElement)document.activeElement.blur();});
   if(sensitivity){
    const panel=page.locator('#roiSensitivity');
-   if(await panel.count()){
+   if(await page.locator('#roiSensitivityOpen').count()){
+    await page.locator('#roiSensitivityOpen').click();await page.locator('#roiSensitivityDialog .ssTitle').waitFor({state:'visible'});
+   }else if(await panel.count()){
     await panel.locator('summary').click();await panel.locator('.sensitivityRow').first().waitFor({state:'visible'});
     await panel.evaluate(el=>el.scrollIntoView({block:'start',behavior:'instant'}));
    }else{
