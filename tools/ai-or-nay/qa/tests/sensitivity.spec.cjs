@@ -63,6 +63,21 @@ test('current effort and current compensation are fixed baseline facts in both c
  }
  expect(out.unchanged).toBe(true);
 });
+test('floating sensitivity replaces Tool-Info only in results and stays fixed while scrolling',async({page})=>{
+ const button=page.locator('#roiSensitivityOpen'),intro=page.locator('.tool-intro-reopen'),dialog=page.locator('#roiSensitivityDialog');
+ await expect(button).toBeHidden();await expect(intro).toBeVisible();
+ await page.locator('#guideDemo').click();await page.locator('#demoCasePicker [data-demo-case="it"]').click();
+ await expect(button).toBeVisible();await expect(intro).toBeHidden();
+ for(const viewport of [{width:1440,height:900},{width:390,height:844}]){
+  await page.setViewportSize(viewport);
+  const before=await button.boundingBox();
+  expect(before.x).toBeGreaterThanOrEqual(0);expect(before.y+before.height).toBeLessThanOrEqual(viewport.height);
+  await page.evaluate(()=>{window.scrollTo({top:500,behavior:'instant'});for(const pane of document.querySelectorAll('#inputView>.right,#inputView>.left'))pane.scrollTop=500;});
+  const after=await button.boundingBox();expect(Math.abs(after.x-before.x)).toBeLessThanOrEqual(1);expect(Math.abs(after.y-before.y)).toBeLessThanOrEqual(1);
+  await button.click();await expect(dialog).toBeVisible();await dialog.locator('.ssClose').click();await expect(dialog).toBeHidden();
+ }
+ await page.locator('#guideNew').click();await expect(button).toBeHidden();await expect(intro).toBeVisible();
+});
 test('DE/EN modal story, scenario selection, direct navigation, live updates and mobile',async({page},info)=>{
  await page.locator('#guideDemo').click();await page.locator('#demoCasePicker [data-demo-case="it"]').click();
  await expect(page.locator('body')).toHaveClass(/guideResults/);
